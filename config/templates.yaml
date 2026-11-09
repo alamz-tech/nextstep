@@ -1,0 +1,22 @@
+# WhatsApp message templates for messages sent OUTSIDE the 24-hour customer-service
+# window. They must be created and approved in WhatsApp Manager (category: UTILITY)
+# before the follow-up can be sent on a real number. The first line must reveal
+# nothing about health (lock-screen safe).
+#
+# The web simulator renders these from copy.json (followup.ping + followup.ask).
+followup_checkin:
+  day3:
+    name: nextstep_checkin_v1          # [TEMPLATE NAME – must match WhatsApp Manager]
+    category: UTILITY
+    languages:
+      en: { code: en, body: "Hi, it's NextStep. Just checking in." }
+      pcm: { code: en, body: "Hi, na NextStep. I just dey check on you." }   # WhatsApp has no pcm locale; submit under en
+    quick_replies: [fu_yes, fu_not_yet, fu_help]
+  day7:
+    name: nextstep_checkin_v1
+    category: UTILITY
+    languages:
+      en: { code: en, body: "Hi, it's NextStep. Just checking in." }
+      pcm: { code: en, body: "Hi, na NextStep. I just dey check on you." }
+    quick_replies: [fu_yes, fu_not_yet, fu_help]
+send_window_wat: { start_hour: 10, end_hour: 18 }   # 10:00–18:00 West Africa Time

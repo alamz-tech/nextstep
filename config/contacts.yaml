@@ -1,0 +1,19 @@
+# Crisis and support contacts.
+#
+# NEVER fill these from memory or a web search. Each value must be a number or
+# service you (or a safeguarding partner) have personally verified is live,
+# free, confidential and appropriate for young women in the demo state.
+# Record who verified it and when. Leave a value empty to keep the [PLACEHOLDER]
+# visible in the UI.
+placeholders:
+  "[VERIFIED HELPLINE 1]": ""          # e.g. GBV helpline — verified_by: , verified_on:
+  "[VERIFIED HELPLINE 2]": ""
+  "[VERIFIED MENTAL HEALTH LINE]": ""
+  "[VERIFIED CHILD HELPLINE]": ""
+  "[EMERGENCY NUMBER]": ""
+  "[SELF-TEST DISTRIBUTION POINTS]": ""
+  "[TRANSPORT SUPPORT INFO, if the programme offers it]": ""
+
+# Number dialled by the "Call a helpline" button (tel: link). Must be one of the
+# verified numbers above. Empty = the button shows a demo notice instead.
+call_button_number: ""

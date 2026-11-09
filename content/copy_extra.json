@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "status": "ENGINEERING ADDITIONS to copy.json. Not in the Claude Design export. Every key here needs design review, and every key in _draft needs clinician sign-off. Pidgin needs native-speaker review.",
+    "why": "The engine needs a few messages the design did not cover: diagnosis refusal, voice fallback, no-service-found, demo-data tag and a parameterised 'I heard' line."
+  },
+  "extra": {
+    "_draft": ["diagnosis"],
+    "en": {
+      "heard_tpl": "I heard: \"{transcript}\"",
+      "diagnosis": "I can't tell whether you have HIV or another infection. Only a test, with a health worker, can tell you that.\n\nA free, youth-friendly service can test you privately. Want me to find one?",
+      "voice_unavailable": "Sorry, I can't listen to voice notes in this language yet. Please type your question and I'll answer in text.",
+      "referral_none": "I don't have a checked service for that area yet. Please try another area nearby, or type MENU.",
+      "referral_demo_tag": "DEMO DATA – not a real service. Do not visit.",
+      "referral_no_more": "That's all the places I have for that area right now.",
+      "injection": "I can only help with health, relationships and staying safe from HIV. What would you like to know?",
+      "reminder_unavailable": "Sorry, I can't set reminders right now. You can come back and say Hi anytime.",
+      "kb_unreviewed": "Note: this answer is draft and has not yet been checked by a health worker.",
+      "fu_later_ok": "Okay, I'll check in once more in a few days.",
+      "fu_rated": "Thank you for telling me.",
+      "closed": "This chat has ended. Say Hi anytime to start again."
+    },
+    "pcm": {
+      "heard_tpl": "I hear: \"{transcript}\"",
+      "diagnosis": "I no fit talk whether you get HIV or another infection. Na only test, with health worker, fit tell you that one.\n\nFree service wey like young people fit test you for private. Make I find one for you?",
+      "voice_unavailable": "Sorry, I never fit hear voice note for this language. Abeg type your question and I go answer for text.",
+      "referral_none": "I never get service wey we don check for that area. Abeg try another area wey near, or type MENU.",
+      "referral_demo_tag": "DEMO DATA – no be real service. No go there.",
+      "referral_no_more": "Na all the places wey I get for that area be that for now.",
+      "injection": "Na only health, relationship and how to stay safe from HIV I fit help with. Wetin you wan know?",
+      "reminder_unavailable": "Sorry, I no fit set reminder now. You fit come back talk Hi anytime.",
+      "kb_unreviewed": "Note: this answer na draft, health worker never check am.",
+      "fu_later_ok": "Okay, I go check you once more after some days.",
+      "fu_rated": "Thank you say you tell me.",
+      "closed": "This chat don end. Talk Hi anytime to start again."
+    }
+  }
+}

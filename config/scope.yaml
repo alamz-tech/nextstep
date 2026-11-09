@@ -1,0 +1,59 @@
+# Out-of-scope and guardrail patterns (deterministic layer). Matched case-insensitively.
+
+# Requests for medicine amounts, schedules, or how to start/stop ART/PrEP/PEP.
+dose:
+  - '\bdos(e|es|age|ing)\b'
+  - '\b\d+\s?(mg|ml|milligram|tablets?|pills?|caps?)\b'
+  - '\bhow\s+(many|much)\s+(pills?|tablets?|capsules?|drugs?|medicine|tabs?)\b'
+  - '\bhow\s+(many|much)\s+.{0,20}(prep|pep|arv|art|truvada|tenofovir|dolutegravir|medicine|drug|tablet|pill)'
+  - '\bhow\s+(many|much)\s+(prep|pep|arv|art)\b'
+  - '\b(how|when)\s+(do|should|can|i|go|fit)\s+.{0,15}(take|start|stop|use)\s+.{0,15}(prep|pep|arv|art|tablet|pill|medicine|drug)'
+  - '\bhow\s+i\s+(go|fit|suppose)\s+(take|use|drink|swallow)\b'
+  - '\b(stop|quit|skip|double)\s+(taking\s+)?(my\s+)?(prep|pep|arv|art|tablets?|pills?|medicine|drugs?)\b'
+  - '\bmiss(ed)?\s+(a\s+|my\s+)?(dose|pill|tablet)'
+  - '\bhow\s+long\s+(do|should|will|i)\s+.{0,20}(take|use)\b'
+  - '\b(regimen|prescription|prescribe)\b'
+  - '\b(tablet|pill|medicine|drug)s?\s+(i|we)\s+(suppose|should|go)\s+take\b'
+  - '\bmorning[- ]after\s+pill\s+how\s+many\b'
+
+# Requests for a diagnosis or test-result interpretation.
+diagnosis:
+  - '\b(do|might|could)\s+i\s+have\s+.{0,20}\b(hiv|aids|sti|std|infection|gonorr?h|syphilis|chlamydia|herpes|disease)'
+  - '\b(did|have)\s+i\s+(got|get|caught|catch|contracted|been\s+infected)\b.{0,25}\b(hiv|aids|sti|std|infection|gonorr?h|syphilis|chlamydia|herpes|disease)'
+  - '\bam\s+i\s+(hiv\s*)?(positive|negative|infected|sick)\b'
+  - '\b(i\s+)?don\s+(get|catch)\s+(hiv|aids|sti|std|infection)\b'
+  - '\bi\s+get\s+(hiv|aids|sti|std|infection)\s*\??\s*$'
+  - '\bis\s+(it|this|that)\s+(hiv|aids|an?\s+sti|an?\s+std|gonorr?h|syphilis|chlamydia|herpes|infection)\b'
+  - '\bwhat\s+(is|does)\s+(this|my|the)\s+(rash|sore|discharge|itch|pain|smell|bump|result|line|lines)\b'
+  - '\b(read|interpret|check|explain)\s+(my|this)\s+(test|result|results|kit)\b'
+  - '\b(one|two|1|2)\s+lines?\b.{0,30}\b(mean|test|result)'
+  - '\bmy\s+(test|result)\s+(say|says|show|shows|be)\b'
+  - '\b(diagnos|symptoms?\s+of\s+(hiv|aids)\s+do\s+i)'
+  - '\bwetin\s+dey\s+(do|worry)\s+me\b'
+
+# Prompt-injection / manipulation attempts. Text is never followed; this only
+# changes which polite message is shown.
+injection:
+  - '\bignore\s+(all\s+|your\s+|the\s+|previous\s+|prior\s+|above\s+)*(instructions?|rules?|prompts?)'
+  - '\b(system|developer)\s+(prompt|message|instructions?)\b'
+  - '\byou\s+are\s+now\b'
+  - '\bpretend\s+(to\s+be|you\s+are)\b'
+  - '\b(act|behave)\s+as\s+(a|an|my)\s+(doctor|nurse|pharmacist|dan)\b'
+  - '\bjailbreak\b'
+  - '\bdeveloper\s+mode\b'
+  - '\bforget\s+(everything|all|your)\b'
+  - '\b(reveal|print|show|repeat)\s+(your|the)\s+(prompt|instructions|rules|config)\b'
+  - '\boverride\b'
+  - '</?\s*(system|assistant|user|instructions?)\s*>'
+  - '\bnew\s+instructions?\s*:'
+
+# Clearly off-topic subjects.
+offtopic:
+  - '\b(homework|assignment|maths?|algebra|physics|chemistry\s+homework|essay|exam\s+questions?)\b'
+  - '\b(football|arsenal|chelsea|man\s+u|barca|premier\s+league|afcon)\b'
+  - '\b(music|song|lyrics|movie|film|nollywood|bbnaija|big\s+brother)\b'
+  - '\b(recipe|cook|jollof)\b'
+  - '\b(bitcoin|crypto|forex|betting|bet9ja|sportybet|loan\s+app)\b'
+  - '\b(write|tell)\s+(me\s+)?(a\s+)?(poem|joke|story|code)\b'
+  - '\b(weather|politics|election|tinubu|president)\b'
+  - '\b(python|javascript|programming|code)\b'

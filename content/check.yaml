@@ -1,0 +1,42 @@
+# Private check: 6 questions. Wording lives in copy.json (check.q1…q6).
+#
+# STATUS: DRAFT. The questions and the scoring below are the PLACEHOLDER scoring
+# from the design handoff. They are NOT yet traced to a guideline. Before any real
+# user sees this, the clinical team must:
+#   1. pick a validated AGYW HIV risk-screening tool from the sources in /sources,
+#   2. fill `source` for every question (document + page),
+#   3. replace `scoring` and record sign-off below.
+# Answers are held in memory for the current session only and never persisted.
+review_status: "draft – pending clinician review"
+signed_off_by: ""          # name, role
+signed_off_on: ""          # YYYY-MM-DD
+tool_name: "PLACEHOLDER scoring from design handoff v0.1 – replace with validated tool"
+questions:
+  - id: q1
+    answers: [y, n, rn]
+    source: "TODO – cite guideline document + page from /sources"
+  - id: q2
+    answers: [y, n, ns]
+    source: "TODO – cite guideline document + page from /sources"
+  - id: q3
+    answers: [y, n, ns]
+    source: "TODO – cite guideline document + page from /sources"
+  - id: q4
+    answers: [y, n, ns]
+    source: "TODO – cite guideline document + page from /sources"
+  - id: q5
+    answers: [y, n, rn]
+    source: "TODO – cite safeguarding / GBV screening guidance from /sources"
+  - id: q6
+    answers: [y, n, rn]
+    source: "TODO – cite guideline document + page from /sources (transactional sex)"
+# Points per answer. "rn" (rather not say) always scores 0.
+scoring:
+  q1: { y: 2 }
+  q2: { n: 1, ns: 1 }
+  q3: { n: 1, ns: 1 }
+  q6: { y: 2 }
+threshold_next: 2         # score >= threshold -> result_next, else result_low
+flags:
+  sti_signs: { q4: y }     # adds check.result_sti
+  safeguarding: { q5: y }  # q5_yes immediately, crisis contacts after the result

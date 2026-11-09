@@ -1,0 +1,7 @@
+id,name,address,area,area_aliases,state,lat,lng,days,hours,is_free,youth_friendly,accepts_under_18,services,verified,verified_at,verified_by,maps_url
+demo-001,[DEMO] Youth Health Service A,[STREET ADDRESS],Yaba,yaba|akoka|sabo|ebute metta|unilag,Lagos,,,[DAYS],[HOURS],true,true,true,hiv_test|prep|sti,false,,,
+demo-002,[DEMO] Youth Health Service B,[STREET ADDRESS],Yaba,yaba|alagomeji|jibowu,Lagos,,,[DAYS],[HOURS],true,true,false,hiv_test|prep,false,,,
+demo-003,[DEMO] Youth Health Service C,[STREET ADDRESS],Surulere,surulere|ojuelegba|aguda|itire,Lagos,,,[DAYS],[HOURS],true,true,true,hiv_test|sti,false,,,
+demo-004,[DEMO] Youth Health Service D,[STREET ADDRESS],Ikeja,ikeja|allen|opebi|alausa|ogba,Lagos,,,[DAYS],[HOURS],true,true,true,hiv_test|prep|sti,false,,,
+demo-005,[DEMO] Youth Health Service E,[STREET ADDRESS],Mushin,mushin|idi araba|olosha,Lagos,,,[DAYS],[HOURS],true,true,false,hiv_test,false,,,
+demo-006,[DEMO] Youth Health Service F,[STREET ADDRESS],Ikorodu,ikorodu|igbogbo|ebute,Lagos,,,[DAYS],[HOURS],true,true,true,hiv_test|prep,false,,,

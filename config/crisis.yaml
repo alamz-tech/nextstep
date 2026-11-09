@@ -1,0 +1,46 @@
+# Layer (a) of crisis detection: keyword / phrase patterns, English + Nigerian Pidgin.
+# Python regular expressions, matched case-insensitively against normalised text
+# (lower-case, curly quotes straightened, repeated spaces collapsed).
+# Order of evaluation: self_harm, then sexual_violence, then violence.
+# These lists favour recall: a false alarm shows support contacts; a miss can cost a life.
+self_harm:
+  - '\b(kill|killing|hurt|harm|cut)(ing)?\s+(my\s*self|myself)\b'
+  - '\bsuicid'
+  - '\bend\s+(my|it)\s+(life|all)\b'
+  - '\bend\s+it\s+all\b'
+  - "\\b(don'?t|do not|no)\\s+(want|wan)\\s+(to\\s+)?(be\\s+here|live|dey\\s+(here|this\\s+life|alive))"
+  - '\bwant\s+to\s+die\b'
+  - '\bwan\s+die\b'
+  - '\bmake\s+i\s+(just\s+)?die\b'
+  - '\bbetter\s+(if\s+)?i\s+(die|dead|no\s+dey)'
+  - '\bno\s+reason\s+to\s+live\b'
+  - '\blife\s+(no\s+)?(get|have)\s+(no\s+)?meaning'
+  - '\bi\s+(go|wan)\s+(take|drink)\s+(sniper|poison)'
+  - '\b(sniper|rat\s+poison)\b'
+  - '\b(tire|tired)\s+(of|for)\s+(this\s+)?(life|living)\b'
+  - '\bnobody\s+go\s+miss\s+me\b'
+  - '\bno\s+wan\s+wake\s+up\b'
+sexual_violence:
+  - '\brap(e|ed|ing)\b'
+  - '\bforc(e|ed|ing)\s+(me|myself)?\s*(to\s+)?(have\s+)?(sex|do\s+am|sleep\s+with)'
+  - '\b(he|she|they|dem|him|e)\s+(force|forced)\s+me\b'
+  - '\b(sexual(ly)?\s+(abuse|assault|harass))'
+  - '\bdefile(d)?\b'
+  - '\btouch(ed|ing)?\s+me\s+(for\s+where|where|without|for\s+my)'
+  - '\bmolest'
+  - '\bdem\s+(take|carry)\s+me\s+by\s+force\b'
+  - '\bsex\s+(wey|that)\s+i\s+no\s+(gree|agree|want)'
+violence:
+  - '\b(hit|hits|hitting|slap|slapped|slaps|beat|beats|beating|beaten|punch|punched|kick|kicked|choke|choked|strangle)\s+(me|us)\b'
+  - '\b(dey|don|go)\s+(beat|slap|hit|knack)\s+me\b'
+  - '\bbeat\s+me\b'
+  - "\\b(don'?t|do not|no)\\s+feel\\s+safe\\b"
+  - '\bnot\s+safe\s+(at|for)\s+(home|house)\b'
+  - '\b(threaten|threatened|threatening|threat)\b'
+  - '\b(abuse|abused|abusing|abusive)\b'
+  - '\bdomestic\s+violence\b'
+  - '\bwant\s+to\s+kill\s+me\b'
+  - '\b(wan|go)\s+kill\s+me\b'
+  - '\block(ed)?\s+me\s+(in|inside)\b'
+  - '\bafraid\s+(of|for)\s+my\s+(life|boyfriend|husband|partner|uncle|father)\b'
+  - '\bi\s+dey\s+fear\s+(am|my\s+(man|boyfriend|husband|uncle|papa))\b'
