@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "nextstep", "url": "http://localhost:8077", "port": 8077 }
+  ]
+}

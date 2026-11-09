@@ -1,0 +1,94 @@
+/* Generated from content/tokens.json by scripts/build_tokens_css.py. Do not edit by hand. */
+@import url("/static/fonts/fonts.css");
+:root {
+  --ns-color-bg: #FAF8F4;
+  --ns-color-surface: #FFFFFF;
+  --ns-color-chat-bg: #EEEAE3;
+  --ns-color-text: #1B1F23;
+  --ns-color-text-2: #4A5560;
+  --ns-color-line: #E3DFD7;
+  --ns-color-primary: #0F5C5A;
+  --ns-color-on-primary: #FFFFFF;
+  --ns-color-primary-tint: #DCEFEC;
+  --ns-color-accent: #C2462E;
+  --ns-color-on-accent: #FFFFFF;
+  --ns-color-accent-soft: #F59A82;
+  --ns-color-highlight: #F6C453;
+  --ns-color-on-highlight: #1B1F23;
+  --ns-color-support: #2F5DA8;
+  --ns-color-on-support: #FFFFFF;
+  --ns-color-support-tint: #E3EAF6;
+  --ns-color-success: #2E7D4F;
+  --ns-color-user-bubble: #DCEFEC;
+  --ns-color-bot-bubble: #FFFFFF;
+  --ns-space-1: 4px;
+  --ns-space-2: 8px;
+  --ns-space-3: 12px;
+  --ns-space-4: 16px;
+  --ns-space-5: 24px;
+  --ns-space-6: 32px;
+  --ns-space-7: 48px;
+  --ns-space-8: 64px;
+  --ns-radius-sm: 8px;
+  --ns-radius-md: 12px;
+  --ns-radius-lg: 16px;
+  --ns-radius-xl: 20px;
+  --ns-radius-pill: 999px;
+  --ns-font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --ns-font-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --ns-font-mono: ui-monospace, Roboto Mono, monospace;
+  --ns-size-touch-min: 44px;
+  --ns-size-button-height: 48px;
+  --ns-size-icon: 24px;
+  --ns-size-icon-stroke: 2px;
+  --ns-size-chat-max-width: 560px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --ns-color-bg: #0E1517;
+  --ns-color-surface: #172225;
+  --ns-color-chat-bg: #121C1F;
+  --ns-color-text: #EEF2F1;
+  --ns-color-text-2: #A9B7B5;
+  --ns-color-line: #2A3A3E;
+  --ns-color-primary: #5CC8BE;
+  --ns-color-on-primary: #0E1517;
+  --ns-color-primary-tint: #1F3B3A;
+  --ns-color-accent: #FF8A70;
+  --ns-color-on-accent: #0E1517;
+  --ns-color-highlight: #F6C453;
+  --ns-color-on-highlight: #0E1517;
+  --ns-color-support: #8FB0EA;
+  --ns-color-on-support: #0E1517;
+  --ns-color-success: #6CC79A;
+  --ns-color-user-bubble: #1F3B3A;
+  --ns-color-bot-bubble: #1F2D31;
+  --ns-color-accent-soft: #F59A82;
+  --ns-color-support-tint: #E3EAF6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ns-color-bg: #0E1517;
+  --ns-color-surface: #172225;
+  --ns-color-chat-bg: #121C1F;
+  --ns-color-text: #EEF2F1;
+  --ns-color-text-2: #A9B7B5;
+  --ns-color-line: #2A3A3E;
+  --ns-color-primary: #5CC8BE;
+  --ns-color-on-primary: #0E1517;
+  --ns-color-primary-tint: #1F3B3A;
+  --ns-color-accent: #FF8A70;
+  --ns-color-on-accent: #0E1517;
+  --ns-color-highlight: #F6C453;
+  --ns-color-on-highlight: #0E1517;
+  --ns-color-support: #8FB0EA;
+  --ns-color-on-support: #0E1517;
+  --ns-color-success: #6CC79A;
+  --ns-color-user-bubble: #1F3B3A;
+  --ns-color-bot-bubble: #1F2D31;
+  --ns-color-accent-soft: #F59A82;
+  --ns-color-support-tint: #E3EAF6;
+  color-scheme: dark;
+}

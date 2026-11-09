@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NextStep simulator</title>
+<link rel="stylesheet" href="/static/shared/tokens.css">
+<link rel="stylesheet" href="/static/sim/sim.css">
+<link rel="icon" href="/static/shared/logo.svg" type="image/svg+xml">
+</head>
+<body>
+<div class="page">
+  <div class="banner" role="status">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1018 0a9 9 0 10-18 0 M12 11v6 M12 7.5v.5"/></svg>
+    <span id="banner">DEMO – test data only. Not a real health service. Do not enter real personal information.</span>
+  </div>
+
+  <header class="top">
+    <div class="top-in">
+      <div class="brand">
+        <svg width="40" height="40" viewBox="0 0 48 48" role="img" aria-label="NextStep"><rect width="48" height="48" rx="14" fill="#0F5C5A"/><path d="M11 35h8v-7.5h8V20h9" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="12.5" r="3.6" fill="#F6C453"/></svg>
+        <div class="brand-text">
+          <span class="wordmark">Next<span>Step</span></span>
+          <span class="sub">Web simulator · same flows as WhatsApp</span>
+        </div>
+      </div>
+      <div class="controls">
+        <div role="group" aria-label="Language" class="seg">
+          <button type="button" id="lang-en" aria-pressed="true">English</button>
+          <button type="button" id="lang-pcm" aria-pressed="false">Pidgin</button>
+        </div>
+        <button type="button" id="theme" class="pill-outline" aria-pressed="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg><span id="theme-label">Dark</span>
+        </button>
+        <button type="button" id="restart" class="pill-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8 M4 4v4h4"/></svg><span id="restart-label">Restart</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="chat" aria-label="Chat">
+      <div class="chat-head">
+        <div class="avatar" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 48 48"><path d="M11 35h8v-7.5h8V20h9" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="12.5" r="3.8" fill="#F6C453"/></svg></div>
+        <div class="chat-title"><strong>NextStep</strong><span>Simulated chat · test data</span></div>
+      </div>
+      <div id="log" class="log" aria-live="polite"><div class="status" id="status">Loading…</div></div>
+      <form id="composer" class="composer">
+        <label for="ns-input" class="sr-only">Message</label>
+        <input id="ns-input" type="text" autocomplete="off" maxlength="500" placeholder="Type a message">
+        <button type="button" id="voice" class="voice-btn" aria-label="Send demo voice note" title="Send demo voice note">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6a3 3 0 016 0v5a3 3 0 01-6 0z M5 11a7 7 0 0014 0 M12 18v3"/></svg>
+        </button>
+        <button type="submit" class="send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14 M13 6l6 6-6 6"/></svg><span id="send-label">Send</span></button>
+      </form>
+    </section>
+
+    <aside class="side">
+      <div class="card">
+        <h2>Demo shortcuts</h2>
+        <p>Jump to any flow for recording. Each one types a sample message for you.</p>
+        <div class="shortcuts" id="shortcuts"></div>
+      </div>
+      <div class="card">
+        <h2>Session counters</h2>
+        <p>The same aggregate events the dashboard counts. Test data, from this tab only.</p>
+        <div class="counters" id="counters"></div>
+      </div>
+      <div class="foot">Keywords: MENU, STOP, DELETE, HELP. All health wording is draft copy for clinician review. Helplines and services are placeholders. <span id="engine-info"></span></div>
+    </aside>
+  </main>
+</div>
+<script src="/static/sim/sim.js"></script>
+</body>
+</html>
