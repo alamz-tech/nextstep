@@ -6,3 +6,4 @@ cryptography==44.0.0
 anthropic==2.7.0
 pypdf==5.1.0
 python-multipart==0.0.20
+reportlab==4.2.5

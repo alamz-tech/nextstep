@@ -1,5 +1,6 @@
 ---
 id: hiv-self-testing
+title: "HIV self-testing"
 topic: hiv
 lang: en
 age_tier: all

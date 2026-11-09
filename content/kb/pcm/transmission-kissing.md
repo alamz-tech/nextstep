@@ -1,5 +1,6 @@
 ---
 id: transmission-kissing
+title: "How HIV dey pass and how e no dey pass"
 topic: transmission
 lang: pcm
 age_tier: all

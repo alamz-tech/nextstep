@@ -16,6 +16,7 @@ class Service:
     area: str
     aliases: list[str]
     state: str
+    lga: str
     days: str
     hours: str
     is_free: bool
@@ -43,7 +44,7 @@ class ServiceFinder:
                 self.rows.append(Service(
                     id=r["id"], name=r["name"], address=r["address"], area=r["area"],
                     aliases=[a.strip().lower() for a in (r.get("area_aliases") or "").split("|") if a.strip()] + [r["area"].lower()],
-                    state=r["state"], days=r["days"], hours=r["hours"], is_free=_b(r["is_free"]),
+                    state=r["state"], lga=r.get("lga") or "", days=r["days"], hours=r["hours"], is_free=_b(r["is_free"]),
                     youth_friendly=_b(r["youth_friendly"]), accepts_under_18=_b(r["accepts_under_18"]),
                     services=[s for s in (r.get("services") or "").split("|") if s], verified=_b(r["verified"]),
                     verified_at=date.fromisoformat(va) if va else None, maps_url=r.get("maps_url") or "",
@@ -72,6 +73,28 @@ class ServiceFinder:
     def demo_default(self, tier: str | None) -> list[Service]:
         """'Use demo location' in the simulator = Yaba (the design's sample area)."""
         return self.find("Yaba, Lagos", tier)
+
+    def list(self, state: str | None, lga: str | None, tier: str | None) -> list[Service]:
+        out = []
+        for s in self.rows:
+            if not self.is_showable(s):
+                continue
+            if state and s.state.lower() != state.lower():
+                continue
+            if lga and s.lga.lower() != lga.lower():
+                continue
+            if tier == "15_17" and not s.accepts_under_18:
+                continue
+            out.append(s)
+        out.sort(key=lambda s: (not s.verified, s.lga, s.id))
+        return out
+
+    def to_public(self, s: Service) -> dict:
+        return {"id": s.id, "name": s.name, "address": s.address, "area": s.area, "lga": s.lga, "state": s.state,
+                "days": s.days, "hours": s.hours, "is_free": s.is_free, "youth_friendly": s.youth_friendly,
+                "accepts_under_18": s.accepts_under_18, "services": s.services, "verified": s.verified,
+                "verified_at": s.verified_at.isoformat() if s.verified_at else None, "demo": not s.verified,
+                "maps_url": s.maps_url if s.verified else "", "aliases": s.aliases}
 
     def by_id(self, sid: str) -> Service | None:
         return next((s for s in self.rows if s.id == sid), None)

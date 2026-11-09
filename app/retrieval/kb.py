@@ -41,6 +41,7 @@ def tokenize(text: str) -> list[str]:
 class Chunk:
     id: str
     lang: str
+    title: str
     topic: str
     age_tier: str
     source_document: str
@@ -76,7 +77,7 @@ def load_chunk(path: Path) -> Chunk:
     if missing:
         raise ValueError(f"{path}: missing metadata {missing}")
     return Chunk(
-        id=meta["id"], lang=meta["lang"], topic=meta.get("topic", ""), age_tier=str(meta["age_tier"]),
+        id=meta["id"], lang=meta["lang"], title=str(meta.get("title") or meta["id"].replace("-", " ").capitalize()), topic=meta.get("topic", ""), age_tier=str(meta["age_tier"]),
         source_document=meta["source_document"], source_section=str(meta["source_section"]),
         review_status=meta["review_status"], keywords=[str(k) for k in meta.get("keywords") or []],
         buttons=meta.get("buttons") or ["qa_another", "menu"], body=m.group(2).strip(), path=str(path),
@@ -159,7 +160,7 @@ class KnowledgeBase:
 
     def report(self) -> list[dict]:
         return [
-            {"id": c.id, "lang": c.lang, "status": c.review_status, "stub": c.is_stub,
+            {"id": c.id, "title": c.title, "lang": c.lang, "status": c.review_status, "stub": c.is_stub,
              "source": c.source_document, "served": self._servable(c)}
             for c in self.all
         ]

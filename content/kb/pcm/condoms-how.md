@@ -1,5 +1,6 @@
 ---
 id: condoms-how
+title: "How to use condom"
 topic: condoms
 lang: pcm
 age_tier: all

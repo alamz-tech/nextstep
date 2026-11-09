@@ -38,11 +38,15 @@ class Container:
     cipher: ReminderCipher
     voice: object
 
+    @property
+    def finder(self):
+        return self.engine.finder
+
     def uid(self, channel: str, raw_id: str) -> str:
         return hash_id(f"{channel}:{raw_id}", self.settings.hmac_secret)
 
     def process(self, channel: str, raw_id: str, inp: Inbound, recipient: str | None = None) -> Result:
-        """Run one inbound event through the engine and persist the outcome."""
+        """Chat channels only (WhatsApp, simulator). The Flutter app uses the stateless /v1 API."""
         uid = self.uid(channel, raw_id)
         state = self.repo.get_session(uid)
         res = self.engine.handle(state, inp)

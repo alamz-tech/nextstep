@@ -83,8 +83,27 @@ class Settings:
     dashboard_sample_badge: bool = field(default_factory=lambda: _bool("DASHBOARD_SAMPLE_BADGE", True))
     pilot_start_date: str = field(default_factory=lambda: _str("PILOT_START_DATE", ""))
 
-    # --- simulator ---
-    sim_enabled: bool = field(default_factory=lambda: _bool("SIM_ENABLED", True))
+    # --- channels ---
+    # WhatsApp is a possible FUTURE channel only, off by default. Meta's WhatsApp Business
+    # policy bans general-purpose AI chatbots: if ever enabled it must stay a structured service.
+    feature_whatsapp: bool = field(default_factory=lambda: _bool("FEATURE_WHATSAPP", False))
+
+    # --- app API ---
+    public_base_url: str = field(default_factory=lambda: _str("PUBLIC_BASE_URL", "http://localhost:8077"))
+    token_secret: str = field(default_factory=lambda: _str("TOKEN_SECRET", ""))
+    token_ttl_hours: int = field(default_factory=lambda: _int("TOKEN_TTL_HOURS", 12))
+    bootstrap_admin_user: str = field(default_factory=lambda: _str("PLATFORM_ADMIN_USER", ""))
+    bootstrap_admin_password: str = field(default_factory=lambda: _str("PLATFORM_ADMIN_PASSWORD", ""))
+    rate_limit_per_min: int = field(default_factory=lambda: _int("RATE_LIMIT_PER_MIN", 30))
+    rate_limit_ask_per_min: int = field(default_factory=lambda: _int("RATE_LIMIT_ASK_PER_MIN", 10))
+    rate_limit_box_per_min: int = field(default_factory=lambda: _int("RATE_LIMIT_BOX_PER_MIN", 6))
+    question_ttl_hours: int = field(default_factory=lambda: _int("QUESTION_TTL_HOURS", 48))
+    referral_ttl_days: int = field(default_factory=lambda: _int("REFERRAL_TTL_DAYS", 90))
+    audio_cache_seconds: int = field(default_factory=lambda: _int("AUDIO_CACHE_SECONDS", 600))
+    web_app_dir: Path = field(default_factory=lambda: Path(_str("WEB_APP_DIR", str(ROOT / "app_flutter" / "build" / "web"))))
+
+    # --- simulator (testing tool only; replaced by the Flutter web build) ---
+    sim_enabled: bool = field(default_factory=lambda: _bool("SIM_ENABLED", False))
     sim_record_events: bool = field(default_factory=lambda: _bool("SIM_RECORD_EVENTS", True))
 
     # --- follow-up scheduler ---
@@ -103,6 +122,10 @@ class Settings:
 
     def is_insecure_secret(self) -> bool:
         return self.hmac_secret.startswith("dev-only")
+
+    @property
+    def signing_secret(self) -> str:
+        return self.token_secret or ("tok:" + self.hmac_secret)
 
 
 _settings: Settings | None = None

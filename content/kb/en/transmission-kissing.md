@@ -1,5 +1,6 @@
 ---
 id: transmission-kissing
+title: "How HIV is and isn't passed on"
 topic: transmission
 lang: en
 age_tier: all

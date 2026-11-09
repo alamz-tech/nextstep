@@ -1,5 +1,6 @@
 ---
 id: sti-basics
+title: "STI basics"
 topic: sti
 lang: pcm
 age_tier: all

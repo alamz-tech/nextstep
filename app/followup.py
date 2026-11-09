@@ -21,7 +21,8 @@ def in_send_window(templates: dict, now: datetime | None = None) -> bool:
 
 async def tick(container, wa_router, templates: dict) -> dict:
     s = container.settings
-    purged = container.repo.purge_expired(s.session_ttl_hours * 3600, s.events_retention_days)
+    purged = container.repo.purge_expired(s.session_ttl_hours * 3600, s.events_retention_days,
+                                          question_ttl_s=s.question_ttl_hours * 3600)
     sent = 0
     if wa_router is not None and wa_router.client.configured and in_send_window(templates):
         for rem in container.repo.due_reminders(int(time.time()), channel="whatsapp"):

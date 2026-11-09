@@ -62,7 +62,7 @@ def test_under15_stores_nothing_but_aggregate(container):
     assert container.repo.get_session(container.uid("sim", uid)) is None
     assert container.repo.count_rows("sessions") == before - 1
     rows = container.repo.event_rows(None)
-    assert any(r[1] == "age_tier_selected" and r[2] == "under_15" for r in rows)
+    assert any(r["event"] == "age_tier_selected" and r["dim1"] == "under_15" for r in rows)
 
 
 def test_crisis_runs_before_every_state(container):
@@ -129,12 +129,17 @@ def test_whatsapp_signature_and_parse():
 
 def test_dashboard_small_cell_suppression():
     today = __import__("datetime").date(2026, 11, 9)
-    rows = [("2026-11-08", "conversation_started", "en", "", 12), ("2026-11-08", "crisis_escalation", "violence", "keyword", 2),
-            ("2026-11-08", "check_completed", "next", "", 4)]
+    base = dict(dim1="", dim2="", state="lagos", tier="18_24", lang="en", setting="", org="")
+    rows = [dict(base, day="2026-11-08", event="app_open", count=12),
+            dict(base, day="2026-11-08", event="crisis_escalation", dim1="violence", count=2),
+            dict(base, day="2026-11-08", event="check_completed", dim1="next", count=4),
+            dict(base, day="2026-11-08", event="app_open", tier="15_17", count=3)]
     d = summarise(rows, "7", today=today)
     kp = {k["key"]: k["v"] for k in d["kpis"]}
-    assert kp["conversations"] == "12" and kp["crisis"] == "<5" and kp["checks"] == "<5"
+    assert kp["opens"] == "15" and kp["crisis"] == "<5" and kp["checks"] == "<5"
     assert d["funnel"][1]["conv"].startswith("–")
+    d2 = summarise(rows, "7", today=today, filters={"tier": "15_17"})
+    assert {k["key"]: k["v"] for k in d2["kpis"]}["opens"] == "<5"
 
 
 def test_unverified_services_hidden_outside_demo(settings, monkeypatch):

@@ -1,5 +1,6 @@
 ---
 id: condoms-how
+title: "Using condoms"
 topic: condoms
 lang: en
 age_tier: all

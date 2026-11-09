@@ -1,5 +1,6 @@
 ---
 id: prevention-overview
+title: "Ways to protect yourself"
 topic: prevention
 lang: en
 age_tier: all

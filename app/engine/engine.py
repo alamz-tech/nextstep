@@ -332,6 +332,69 @@ class Engine:
             r.messages.append(self.m(("cant_help", "offtopic"), buttons=["cant_ask", "menu"]))
         r.events.append(("out_of_scope", kind, ""))
 
+    # ------------------------------------------------------------ stateless Q&A (app API)
+    def detect_crisis(self, text: str) -> tuple[str | None, str, dict | None]:
+        """Layer (a) keywords, then layer (b) LLM classifier if configured."""
+        cr = self.rules.crisis_keywords(text)
+        if cr.kind:
+            return cr.kind, "keyword", None
+        cls = None
+        if self.llm_crisis and not isinstance(self.llm, NoLLM) and len(text.strip()) > 3:
+            cls = S.llm_classify(self.llm, text)
+            if cls and cls.get("crisis") not in (None, "none"):
+                return cls["crisis"], "llm", cls
+        return None, "", cls
+
+    def crisis_payload(self, kind: str, lang: str) -> dict:
+        refs = [["crisis", "selfharm"]] if kind == "self_harm" else [["crisis", "violence"]]
+        if kind == "sexual_violence":
+            refs.append(["crisis", "pep"])
+        return {"type": "crisis", "crisis": kind, "refs": refs,
+                "text": "\n\n".join(self.copy.t(r, lang) for r in refs), "draft": True}
+
+    def ask(self, question: str, lang: str, tier: str | None, input_kind: str = "text") -> tuple[dict, list[tuple]]:
+        """Crisis → scope → grounded answer bank. Returns (response, events). Nothing is stored."""
+        q = (question or "").strip()[:1000]
+        events: list[tuple] = []
+        kind, layer, cls = self.detect_crisis(q)
+        if kind:
+            events.append(("crisis_escalation", kind, layer))
+            return self.crisis_payload(kind, lang), events
+        scope = self.rules.scope_check(q)
+        if scope is None and cls and cls.get("intent") in ("dose", "diagnosis", "injection", "offtopic"):
+            scope = cls["intent"]
+        if scope:
+            ref = {"dose": ["cant_help", "dose"], "diagnosis": ["extra", "diagnosis"],
+                   "injection": ["extra", "injection"]}.get(scope, ["cant_help", "offtopic"])
+            events.append(("out_of_scope", scope, ""))
+            return {"type": "out_of_scope", "scope": scope, "ref": ref, "text": self.copy.t(ref, lang),
+                    "draft": self.copy.is_draft(ref)}, events
+        tier_f = tier if tier in ("15_17", "18_24") else None
+        hits = self.kb.search(q, lang, tier_f)
+        if not hits:
+            events.append(("question_asked", "unknown", input_kind))
+            return {"type": "unknown", "ref": ["qa", "unknown"], "text": self.copy.t(("qa", "unknown"), lang),
+                    "draft": True}, events
+        top = hits[0].chunk
+        text = (self.kb.get(top.id, lang) or top).body
+        used = [top.id]
+        composed_by = "verbatim"
+        if self.compose_with_llm and not isinstance(self.llm, NoLLM):
+            composed, used_ids = S.compose_answer(self.llm, q, [h.chunk for h in hits], lang)
+            if composed and S.post_check(composed, "\n".join(h.chunk.body for h in hits)) is None:
+                text, used, composed_by = composed, used_ids, "llm"
+            elif composed:
+                log.warning("post-generation check blocked a composed answer")
+        sources = []
+        for cid in used:
+            c = self.kb.get(cid, lang)
+            if c:
+                sources.append({"chunk_id": c.id, "source_document": c.source_document,
+                                "source_section": c.source_section, "review_status": c.review_status})
+        events.append(("question_asked", (top.topic or "general")[:32], input_kind))
+        return {"type": "answer", "text": text, "sources": sources, "composed_by": composed_by,
+                "draft": not top.is_approved, "topic": top.topic}, events
+
     # ------------------------------------------------------------ answer bank
     def _answer(self, r: Result, st: dict, question: str, input_kind: str) -> bool:
         lang = st["lang"]
