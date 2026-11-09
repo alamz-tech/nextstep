@@ -9,6 +9,11 @@ source_section: "TODO"
 review_status: "draft – pending clinician review"
 keywords: [kiss, kissing, hug, cup, plate, share, spit]
 buttons: [qa_protect, qa_another, menu]
+quiz:
+  - { statement: "HIV fit pass through kiss.", answer: false, explain_from_body: true }
+  - { statement: "HIV fit pass from mama go her pikin.", answer: true, explain_from_body: true }
+myths:
+  - { myth: "You fit catch HIV if una share cup or plate.", fact: "HIV no dey pass through kiss, hug, or if una share cup or plate." }
 ---
 Good question. No. HIV no dey pass through kiss, hug, or if una share cup or plate.
 

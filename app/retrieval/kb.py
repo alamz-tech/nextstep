@@ -51,6 +51,8 @@ class Chunk:
     buttons: list[str]
     body: str
     path: str
+    quiz: list = field(default_factory=list)
+    myths: list = field(default_factory=list)
     tokens: list[str] = field(default_factory=list)
 
     @property
@@ -81,6 +83,7 @@ def load_chunk(path: Path) -> Chunk:
         source_document=meta["source_document"], source_section=str(meta["source_section"]),
         review_status=meta["review_status"], keywords=[str(k) for k in meta.get("keywords") or []],
         buttons=meta.get("buttons") or ["qa_another", "menu"], body=m.group(2).strip(), path=str(path),
+        quiz=meta.get("quiz") or [], myths=meta.get("myths") or [],
     )
 
 

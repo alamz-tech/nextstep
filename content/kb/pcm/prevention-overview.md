@@ -9,6 +9,8 @@ source_section: "TODO"
 review_status: "draft – pending clinician review"
 keywords: [protect, prevent, safe, condom, prep, test, status, partner, avoid]
 buttons: [qa_find, qa_another, menu]
+quiz:
+  - { statement: "To use condom every time dey help protect you.", answer: true, explain_from_body: true }
 ---
 See some ways to protect yourself:
 • Use condom every time.

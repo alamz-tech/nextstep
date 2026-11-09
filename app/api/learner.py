@@ -14,6 +14,7 @@ import time
 from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Request, Response, UploadFile
 from pydantic import BaseModel, Field
 
+from ..kits import build_kits
 from ..privacy import hash_id
 from .ratelimit import limit
 
@@ -134,14 +135,13 @@ def make_router(container) -> APIRouter:
                "review_status": c.review_status, "keywords": c.keywords}
               for c in container.kb.all if container.kb._servable(c)]
         app_copy_p = s.content_dir / "app_copy.json"
-        kits_p = s.content_dir / "kits.json"
         data = {
             "copy": container.copy.public_json(),
             "app_copy": json.loads(app_copy_p.read_text(encoding="utf-8")) if app_copy_p.exists() else {},
             "kb": kb,
             "check": {k: v for k, v in eng.scorer.cfg.items()},
             "services": [container.finder.to_public(x) for x in container.finder.list(None, None, None)],
-            "kits": json.loads(kits_p.read_text(encoding="utf-8")) if kits_p.exists() else {},
+            "kits": build_kits(container.kb),
             "demo_mode": s.demo_mode,
         }
         raw = json.dumps(data, sort_keys=True, ensure_ascii=False)

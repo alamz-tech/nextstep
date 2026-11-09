@@ -260,6 +260,39 @@ def make_router(container) -> APIRouter:
                             headers={"Content-Disposition": f'attachment; filename="nextstep-session-{fs["session_date"]}.pdf"'})
         return d
 
+    downloads: dict[str, tuple[float, str, str]] = {}
+
+    @r.post("/sessions/{sid}/report-link")
+    def report_link(sid: str, format: str = "pdf", p: Principal = Depends(require("facilitator", "org_admin", "platform_admin"))):
+        """One-time, 2-minute download link, so the bearer token never goes in a URL."""
+        import secrets as _s
+        import time as _t
+        own_session(sid, p)
+        if format not in ("csv", "pdf"):
+            raise HTTPException(422)
+        now = _t.time()
+        for k in [k for k, v in downloads.items() if now - v[0] > 120]:
+            del downloads[k]
+        nonce = _s.token_urlsafe(24)
+        downloads[nonce] = (now, sid, format)
+        return {"url": f"/v1/download/{nonce}"}
+
+    @r.get("/download/{nonce}")
+    def download(nonce: str):
+        import time as _t
+        v = downloads.pop(nonce, None)
+        if not v or _t.time() - v[0] > 120:
+            raise HTTPException(404)
+        fs = repo.get_fsession(v[1])
+        if not fs:
+            raise HTTPException(404)
+        d = report_data(fs)
+        if v[2] == "pdf":
+            from .pdf import session_report_pdf
+            return Response(session_report_pdf(d), media_type="application/pdf",
+                            headers={"Content-Disposition": f'attachment; filename="nextstep-session-{fs["session_date"]}.pdf"'})
+        return report(v[1], "csv", Principal("system", "platform_admin", None, "system"))
+
     # ------------------------------------------------------------ anonymous question box (public, no login)
     @r.get("/join/{code}")
     def join_info(request: Request, code: str):

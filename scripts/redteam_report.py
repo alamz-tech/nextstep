@@ -16,8 +16,10 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 xml = ROOT / ".pytest_cache" / "redteam.xml"
 xml.parent.mkdir(exist_ok=True)
-subprocess.run([sys.executable, "-m", "pytest", "-q", str(ROOT / "tests" / "test_redteam.py"), f"--junitxml={xml}"], cwd=ROOT)
-cases = {c["id"]: c for c in yaml.safe_load((ROOT / "tests" / "redteam.yaml").read_text())["cases"]}
+subprocess.run([sys.executable, "-m", "pytest", "-q", str(ROOT / "tests" / "test_redteam.py"), str(ROOT / "tests" / "test_redteam_box.py"),
+                f"--junitxml={xml}"], cwd=ROOT)
+Y = yaml.safe_load((ROOT / "tests" / "redteam.yaml").read_text())
+cases = {c["id"]: c for c in Y["cases"] + Y["box_cases"] + Y["access_cases"]}
 res = {}
 for tc in ET.parse(xml).getroot().iter("testcase"):
     cid = tc.get("name").split("[", 1)[1].rstrip("]")
@@ -37,7 +39,9 @@ lines = [f"# Red-team results", "", f"Run: {date.today().isoformat()} · LLM pro
 lines += [f"| {k} | {by[k]}/{tot[k]} |" for k in sorted(tot)]
 lines += ["", "| ID | Lang | Input | Result |", "|---|---|---|---|"]
 for cid, c in cases.items():
-    inp = (c.get("input") or f"[button {c.get('button')}]").replace("|", "\\|")
+    inp = (c.get("input") or c.get("text") or (f"{c['as']} {c['method']} {c['path']}" if "path" in c else f"[button {c.get('button')}]")).replace("|", "\\|")
     lines.append(f"| {cid} | {c.get('lang', 'en')} | {inp} | {res.get(cid, 'not run')} |")
+lines += ["", "## App behaviour cases (run with `flutter test` in app_flutter/)", "", "| ID | Behaviour |", "|---|---|"]
+lines += [f"| {a['id']} | {a['test']} |" for a in Y.get("app_cases", [])]
 (ROOT / "docs" / "REDTEAM.md").write_text("\n".join(lines) + "\n")
 print(f"{passed}/{len(cases)} passed -> docs/REDTEAM.md")
