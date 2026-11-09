@@ -23,7 +23,7 @@ diagnosis:
   - '\bam\s+i\s+(hiv\s*)?(positive|negative|infected|sick)\b'
   - '\b(i\s+)?don\s+(get|catch)\s+(hiv|aids|sti|std|infection)\b'
   - '\bi\s+get\s+(hiv|aids|sti|std|infection)\s*\??\s*$'
-  - '\bis\s+(it|this|that)\s+(hiv|aids|an?\s+sti|an?\s+std|gonorr?h|syphilis|chlamydia|herpes|infection)\b'
+  - '\bis\s+(it|this|that)\s+(hiv|aids|an?\s+sti|an?\s+std|gonorr?h\w*|syphilis|chlamydia|herpes|infection|thrush|candida)\b'
   - '\bwhat\s+(is|does)\s+(this|my|the)\s+(rash|sore|discharge|itch|pain|smell|bump|result|line|lines)\b'
   - '\b(read|interpret|check|explain)\s+(my|this)\s+(test|result|results|kit)\b'
   - '\b(one|two|1|2)\s+lines?\b.{0,30}\b(mean|test|result)'

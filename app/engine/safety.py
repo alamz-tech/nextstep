@@ -173,7 +173,7 @@ _DOSE_OUT = [
     r"\b(truvada|tenofovir|emtricitabine|dolutegravir|lamivudine|efavirenz|cabotegravir|dapivirine|lenacapavir)\b",
 ]
 _DIAG_OUT = [
-    r"\byou\s+(have|got|probably have|likely have|may have|might have)\s+(hiv|aids|an?\s+sti|an?\s+std|an?\s+infection|gonorr?h\w*|syphilis|chlamydia|herpes)\b",
+    r"(?<!whether )(?<!if )\byou\s+(have|got|probably have|likely have|may have|might have)\s+(hiv|aids|an?\s+sti|an?\s+std|an?\s+infection|gonorr?h\w*|syphilis|chlamydia|herpes)\b",
     r"\byou\s+(are|re)\s+(hiv[- ]?)?(positive|negative|infected)\b",
     r"\byou\s+(do\s+not|don'?t)\s+have\s+(hiv|aids|an?\s+sti|an?\s+infection)\b",
     r"\b(this|that|it)\s+(is|sounds like|looks like)\s+(hiv|an?\s+sti|gonorr?h\w*|syphilis|chlamydia|herpes)\b",
