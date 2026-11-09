@@ -3,11 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../core/api.dart';
 import '../core/state.dart';
-import '../core/theme.dart';
-import '../widgets/common.dart';
-import 'crisis.dart';
+import '../widgets/chat_ui.dart';
 
-/// Student question box. Opened from the facilitator's QR code in a browser:
+/// Student question box, opened from the facilitator's QR code: same chat look,
 /// no install, no login, no name. Crisis detection runs on every question.
 class JoinScreen extends StatefulWidget {
   const JoinScreen({super.key, required this.code});
@@ -18,14 +16,14 @@ class JoinScreen extends StatefulWidget {
 
 class _JoinScreenState extends State<JoinScreen> {
   final _ctl = TextEditingController();
-  Map<String, dynamic>? info;
-  String? status, message, error;
-  Map<String, dynamic>? crisis;
+  final List<(String from, Map d)> items = [];
+  bool? open;
   bool busy = false;
 
   @override
   void initState() {
     super.initState();
+    _ctl.addListener(() => setState(() {}));
     _load();
   }
 
@@ -33,32 +31,37 @@ class _JoinScreenState extends State<JoinScreen> {
     final s = context.read<AppState>();
     try {
       final r = await s.api.get('/v1/join/${widget.code}') as Map<String, dynamic>;
-      if (r['lang'] != null && !s.onboarded) await s.setLang(r['lang']);
-      setState(() => info = r);
-      if (r['open'] == true) s.api.post('/v1/join/${widget.code}/hello').catchError((_) => null);
-    } on ApiException {
-      setState(() => error = s.t('app', 'join_closed'));
-    } on OfflineException {
-      setState(() => error = s.t('app', 'offline_ask'));
+      s.lang = r['lang'] ?? s.lang;
+      setState(() => open = r['open'] == true);
+      if (open == true) s.api.post('/v1/join/${widget.code}/hello').catchError((_) => null);
+    } catch (_) {
+      setState(() => open = false);
     }
   }
 
   Future<void> _send(AppState s) async {
     final q = _ctl.text.trim();
-    if (q.isEmpty) return;
-    setState(() => busy = true);
+    if (q.isEmpty || busy) return;
+    _ctl.clear();
+    setState(() {
+      busy = true;
+      items.add(('user', {'text': q}));
+    });
     try {
       final r = await s.api.post('/v1/join/${widget.code}/questions', {'text': q}) as Map<String, dynamic>;
-      _ctl.clear();
       setState(() {
-        status = r['status'];
-        message = r['text'];
-        crisis = r['crisis'];
+        if (r['status'] == 'crisis') {
+          for (final ref in (r['crisis']['refs'] as List)) {
+            items.add(('bot', {'ref': ref, 'safety': true, 'draft': true}));
+          }
+        } else {
+          items.add(('bot', {'text': r['text']}));
+        }
       });
     } on ApiException catch (e) {
-      setState(() => error = e.status == 429 ? 'Please wait a minute before sending another question.' : s.t('app', 'join_closed'));
+      setState(() => items.add(('sys', {'ref': e.status == 404 ? ['app', 'join_closed'] : ['app', 'offline']})));
     } on OfflineException {
-      setState(() => error = s.t('app', 'offline_ask'));
+      setState(() => items.add(('sys', {'ref': ['app', 'offline']})));
     } finally {
       setState(() => busy = false);
     }
@@ -67,66 +70,73 @@ class _JoinScreenState extends State<JoinScreen> {
   @override
   Widget build(BuildContext context) {
     final s = context.watch<AppState>();
-    final c = NsColors.of(context);
-    final tt = Theme.of(context).textTheme;
-    if (crisis != null) {
-      return CrisisScreen(payload: crisis!, showQuickExit: false, onDone: () => setState(() {
-            crisis = null;
-            status = null;
-          }));
-    }
+    String tx(Map d) => d['text'] ?? s.t(d['ref'] as List);
+    final hasText = _ctl.text.trim().isNotEmpty;
     return Scaffold(
-      appBar: AppBar(
-        title: Row(children: [const Logo(size: 30), const SizedBox(width: 10), Text(s.t('app', 'join_title'))]),
-        actions: [
-          SegmentedButton<String>(
-            segments: const [ButtonSegment(value: 'en', label: Text('EN')), ButtonSegment(value: 'pcm', label: Text('Pidgin'))],
-            selected: {s.lang},
-            showSelectedIcon: false,
-            onSelectionChanged: (v) => s.setLang(v.first),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+      backgroundColor: W.bg,
+      appBar: chatHeader(menu: const [], onMenu: (_) {}),
       body: SafeArea(
-        child: NsPage(maxWidth: 520, children: [
-          if (error != null) Text(error!, style: tt.titleMedium)
-          else if (info == null) const Center(child: CircularProgressIndicator())
-          else if (info!['open'] != true) Text(s.t('app', 'join_closed'), style: tt.titleMedium)
-          else if (status != null) ...[
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Row(children: [
-                  Icon(status == 'received' ? Icons.check_circle_outline : Icons.info_outline, color: status == 'received' ? c.success : c.accent),
-                  const SizedBox(width: 12),
-                  Expanded(child: Text(message ?? '', style: tt.bodyLarge)),
+        top: false,
+        child: Column(children: [
+          Expanded(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 640),
+                child: ListView(padding: const EdgeInsets.fromLTRB(10, 12, 10, 16), children: [
+                  if (open == false) SysPill(s.t(['app', 'join_closed'])),
+                  if (open == true) BotBubble(text: '${s.t(['app', 'join_title'])}\n\n${s.t(['app', 'join_body'])}'),
+                  for (final (from, d) in items)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: from == 'user'
+                          ? UserBubble(tx(d))
+                          : from == 'sys'
+                              ? SysPill(tx(d))
+                              : BotBubble(text: tx(d), safety: d['safety'] == true, draft: d['draft'] == true),
+                    ),
                 ]),
               ),
             ),
-            const SizedBox(height: 16),
-            FilledButton(key: const Key('join-another'), onPressed: () => setState(() => status = null), child: Text(s.t('app', 'join_another'))),
-          ] else ...[
-            Text(s.t('app', 'join_body'), style: tt.bodyLarge),
-            const SizedBox(height: 16),
-            TextField(
-              key: const Key('join-input'),
-              controller: _ctl,
-              maxLength: 500,
-              minLines: 3,
-              maxLines: 6,
-              decoration: InputDecoration(hintText: s.t('app', 'join_placeholder')),
+          ),
+          if (open == true)
+            Container(
+              color: W.bg,
+              padding: const EdgeInsets.fromLTRB(8, 6, 8, 14),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 640),
+                  child: Row(children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(999)),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: TextField(
+                          key: const Key('join-input'),
+                          controller: _ctl,
+                          maxLength: 500,
+                          onSubmitted: (_) => _send(s),
+                          decoration: InputDecoration(hintText: s.t(['sim', 'placeholder']), border: InputBorder.none, counterText: '',
+                              hintStyle: const TextStyle(color: W.sub), contentPadding: const EdgeInsets.symmetric(vertical: 11)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    InkWell(
+                      key: const Key('join-send'),
+                      customBorder: const CircleBorder(),
+                      onTap: hasText ? () => _send(s) : null,
+                      child: Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(color: hasText ? W.teal : W.teal.withValues(alpha: 0.5), shape: BoxShape.circle),
+                        child: Semantics(label: s.t(['app', 'join_send']), child: const Icon(Icons.send, color: Colors.white, size: 20)),
+                      ),
+                    ),
+                  ]),
+                ),
+              ),
             ),
-            const SizedBox(height: 8),
-            FilledButton.icon(
-              key: const Key('join-send'),
-              onPressed: busy ? null : () => _send(s),
-              icon: const Icon(Icons.send),
-              label: Text(s.t('app', 'join_send')),
-            ),
-            const SizedBox(height: 16),
-            Text('NextStep · ${s.t('app', 'not_medical_advice')}', style: tt.bodySmall),
-          ],
         ]),
       ),
     );

@@ -68,36 +68,41 @@ def main() -> None:
 
     fac, cli = login("demo_facilitator"), login("demo_clinic")
 
-    # --- scripted learners
+    # --- scripted learners, through the same chat flow the app uses
     codes = []
-    services = None
     for i in range(60):
         h = {"X-Install-ID": uuid.uuid4().hex}
-        lang = random.choice(["en", "en", "pcm"])
-        tier = "under_15" if i % 20 == 0 else random.choice(["18_24", "18_24", "15_17"])
-        c.post("/v1/learner/onboard", json={"lang": lang, "age_tier": tier}, headers=h)
-        if tier == "under_15":
+
+        def say(**body):
+            return c.post("/v1/chat", json=body, headers=h).json()
+
+        say(kind="text", text=random.choice(["Hi", "Hi", "How far"]))
+        say(kind="button", button="consent_agree")
+        tier = "age_under15" if i % 20 == 0 else random.choice(["age_18_24", "age_18_24", "age_15_17"])
+        say(kind="button", button=tier)
+        if tier == "age_under15":
             continue
-        for _ in range(random.randint(1, 3)):
-            c.post("/v1/learner/events", json={"event": "app_open", "lang": lang, "tier": tier}, headers=h)
-        if random.random() < 0.6:
-            c.post("/v1/learner/ask", json={"question": random.choice(QUESTIONS[:8]), "lang": lang, "tier": tier, "want_audio": False}, headers=h)
+        if random.random() < 0.5:
+            c.post("/v1/chat/demo-voice", headers=h)
+        elif random.random() < 0.5:
+            say(kind="text", text="Can I get HIV from kissing?")
         if random.random() < 0.7:
-            ans = {q: random.choice(["y", "n", "n"]) for q in ("q1", "q2", "q3", "q4", "q6")} | {"q5": "n"}
-            c.post("/v1/learner/check", json={"answers": ans, "lang": lang, "tier": tier}, headers=h)
+            say(kind="button", button="check_start")
+            for q, opts in [(1, "yn"), (2, "yn"), (3, "yn"), (4, "n"), (5, "n"), (6, "yn")]:
+                say(kind="button", button=f"chk_{q}_{random.choice(opts)}")
             if random.random() < 0.7:
-                services = services or c.get("/v1/services", headers=h).json()["services"]
-                ok = [x for x in services if tier != "15_17" or x["accepts_under_18"]]
-                r = c.post("/v1/referrals", json={"service_id": random.choice(ok)["id"], "lang": lang, "tier": tier}, headers=h).json()
-                codes.append((r["code"], h, lang, tier))
-    for code, h, lang, tier in codes:
-        roll = random.random()
-        if roll < 0.45:
+                say(kind="button", button="menu_find")
+                r = say(kind="text", text=random.choice(["Yaba", "Surulere", "Ikeja"]))
+                card = next((m["card"] for m in r["messages"] if m["kind"] == "card"), None)
+                if card:
+                    codes.append(card["code"])
+                    if random.random() < 0.6:
+                        say(kind="button", button="ref_remind")
+                        say(kind="followup_due")
+                        say(kind="button", button=random.choice(["fu_yes", "fu_not_yet"]))
+    for code in codes:
+        if random.random() < 0.45:
             c.post("/v1/clinic/confirm", json={"code": code}, headers=cli)
-        if roll < 0.55:
-            c.post("/v1/learner/outcome", json={"outcome": "went", "lang": lang, "tier": tier}, headers=h)
-        elif roll < 0.8:
-            c.post("/v1/learner/outcome", json={"outcome": "not_yet", "lang": lang, "tier": tier}, headers=h)
 
     # --- one finished facilitator session with a question box
     ses = c.post("/v1/sessions", json={"setting": "school", "session_date": "2026-11-09", "age_band": "15_17", "audience_size": 45, "lang": "en"},
@@ -114,7 +119,7 @@ def main() -> None:
     print("  sign-ins (password from DEMO_PASSWORD, default 'demo-only-password'):")
     for u in ("demo_platform", "demo_admin", "demo_facilitator", "demo_clinic"):
         print(f"    {u}")
-    unconfirmed = [code for code, *_ in codes if not repo.get_referral(code)["confirmed_day"]]
+    unconfirmed = [code for code in codes if not repo.get_referral(code)["confirmed_day"]]
     if unconfirmed:
         print(f"  an unconfirmed demo referral code for the clinic demo: {unconfirmed[0]}")
 

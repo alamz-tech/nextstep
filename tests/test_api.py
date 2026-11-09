@@ -84,7 +84,7 @@ def test_learner_journey(client, org_setup):
     assert client.get("/v1/referrals/mine", headers=h).json()["referrals"] == []
     # dashboard
     dash = client.get("/v1/dashboard/summary?range=all", headers=org_setup["root"]).json()
-    assert {k["key"] for k in dash["kpis"]} >= {"opens", "clinic", "selfrep"}
+    assert [k["key"] for k in dash["kpis"]] == ["conversations", "checks", "referrals", "visits", "crisis"]
 
 
 def test_facilitator_session_and_question_box(client, org_setup):
@@ -166,3 +166,26 @@ def test_question_box_rate_limited(settings, monkeypatch):
 def test_whatsapp_off_by_default(client):
     assert client.post("/webhook/whatsapp", json={}).status_code == 404
     assert client.get("/healthz").json()["channels"]["whatsapp"] is False
+
+
+def test_chat_design_flow(client, org_setup):
+    h = H()
+    r = client.post("/v1/chat", json={"kind": "text", "text": "Hi"}, headers=h).json()
+    assert [m.get("ref") for m in r["messages"]] == [["consent", "intro"], ["consent", "body"]]
+    client.post("/v1/chat", json={"kind": "button", "button": "consent_agree"}, headers=h)
+    r = client.post("/v1/chat", json={"kind": "button", "button": "age_18_24"}, headers=h).json()
+    assert r["messages"][-1]["list"]  # main menu list
+    r = client.post("/v1/chat/demo-voice", headers=h).json()
+    assert r["messages"][0]["ref"] == ["extra", "heard_tpl"] and r["transcript"]
+    client.post("/v1/chat", json={"kind": "button", "button": "menu_find"}, headers=h)
+    r = client.post("/v1/chat", json={"kind": "text", "text": "Yaba"}, headers=h).json()
+    card = [m for m in r["messages"] if m["kind"] == "card"][0]["card"]
+    assert len(card["code"]) == 6
+    assert client.post("/v1/clinic/confirm", json={"code": card["code"]}, headers=org_setup["clinic"]).json()["status"] == "confirmed"
+    r = client.post("/v1/chat", json={"kind": "button", "button": "ref_remind"}, headers=h).json()
+    assert {"type": "schedule_followups"}.items() <= r["actions"][0].items()
+    r = client.post("/v1/chat", json={"kind": "followup_due"}, headers=h).json()
+    assert any(m.get("ref") == ["followup", "ping"] for m in r["messages"])
+    r = client.post("/v1/chat", json={"kind": "text", "text": "DELETE"}, headers=h).json()
+    assert r["ended"] and any(a["type"] == "delete_user" for a in r["actions"])
+    assert client.app.state.container.repo.get_referral(card["code"]) is None

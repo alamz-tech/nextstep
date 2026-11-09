@@ -25,6 +25,3 @@ flutter:
         - asset: assets/fonts/AtkinsonHyperlegible-Regular.ttf
         - asset: assets/fonts/AtkinsonHyperlegible-Bold.ttf
           weight: 700
-    - family: Bricolage
-      fonts:
-        - asset: assets/fonts/BricolageGrotesque-Variable.ttf

@@ -19,7 +19,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import dashboard, followup
-from .api import learner, staff
+from .api import chat, learner, staff
 from .api.auth import bootstrap_admin
 from .api.ratelimit import RateLimiter
 from .config import ROOT, get_settings
@@ -71,6 +71,7 @@ def create_app(settings=None, repo=None) -> FastAPI:
         return resp
 
     app.mount("/static", StaticFiles(directory=ROOT / "app" / "static"), name="static")
+    app.include_router(chat.make_router(container))
     app.include_router(learner.make_router(container))
     app.include_router(staff.make_router(container))
     app.include_router(dashboard.make_router(container))

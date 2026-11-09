@@ -3,127 +3,102 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NextStep impact</title>
-<link rel="stylesheet" href="/static/shared/tokens.css">
+<title>NextStep impact dashboard</title>
+<link rel="stylesheet" href="/static/fonts/fonts.css">
 <link rel="icon" href="/static/shared/logo.svg" type="image/svg+xml">
 <style>
-* { box-sizing: border-box; }
-[hidden] { display: none !important; }
-body { margin: 0; background: var(--ns-color-bg); color: var(--ns-color-text); font-family: var(--ns-font-body); font-size: 16px; line-height: 24px; }
-button { cursor: pointer; font-family: var(--ns-font-body); }
-button:focus-visible { outline: 3px solid var(--ns-color-highlight); outline-offset: 2px; }
-header { background: var(--ns-color-surface); border-bottom: 1px solid var(--ns-color-line); }
-.hin { max-width: 1280px; margin: 0 auto; padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand div { display: flex; flex-direction: column; }
-.title { font-family: var(--ns-font-display); font-weight: 800; font-size: 22px; line-height: 26px; }
-.sub { font-size: 14px; color: var(--ns-color-text-2); line-height: 20px; }
-.badges { display: flex; flex-wrap: wrap; gap: 10px; }
-.badge { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; padding: 8px 14px; border-radius: 999px; line-height: 18px; }
-.anon { background: var(--ns-color-primary-tint); color: var(--ns-color-primary); }
-.sample { background: #F6C453; color: #1B1F23; }
-main { max-width: 1280px; margin: 0 auto; padding: 24px 16px; display: flex; flex-direction: column; gap: 24px; }
-.filters { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
-.ranges { display: flex; flex-wrap: wrap; gap: 8px; }
-.ranges button { min-height: 44px; padding: 0 18px; border-radius: 999px; border: 2px solid var(--ns-color-primary); background: var(--ns-color-surface); color: var(--ns-color-primary); font-weight: 700; font-size: 15px; }
-.ranges button[aria-pressed="true"] { background: var(--ns-color-primary); color: var(--ns-color-on-primary); }
-.rtext { font-size: 15px; color: var(--ns-color-text-2); display: inline-flex; align-items: center; gap: 8px; }
-.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
-.panel { background: var(--ns-color-surface); border: 1px solid var(--ns-color-line); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 4px; }
-.kpi .l { font-size: 14px; color: var(--ns-color-text-2); font-weight: 700; }
-.kpi .v { font-family: var(--ns-font-display); font-size: 36px; font-weight: 700; line-height: 44px; }
-.kpi .n { font-size: 13px; color: var(--ns-color-text-2); line-height: 18px; }
-.kpi.accent .v { color: var(--ns-color-accent); } .kpi.support .v { color: var(--ns-color-support); }
-section.panel { padding: 24px; gap: 16px; }
-h2 { margin: 0; font-family: var(--ns-font-display); font-size: 22px; line-height: 30px; }
-.fhead { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline; }
-.muted { font-size: 14px; color: var(--ns-color-text-2); line-height: 20px; }
-.frow { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
-.frow .fl { flex: 0 0 170px; font-weight: 700; }
-.track { flex: 1 1 280px; min-width: 0; background: var(--ns-color-line); border-radius: 10px; height: 40px; overflow: hidden; }
-.fill { height: 40px; background: var(--ns-color-primary); border-radius: 10px; display: flex; align-items: center; padding: 0 12px; color: var(--ns-color-on-primary); font-weight: 700; min-width: 64px; }
-.fill.accent { background: var(--ns-color-accent); color: var(--ns-color-on-accent); }
-.frow .fc { flex: 0 0 160px; font-size: 14px; color: var(--ns-color-text-2); }
-.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-.brow { display: flex; flex-direction: column; gap: 6px; }
-.brow .top { display: flex; justify-content: space-between; font-size: 15px; }
-.btrack { background: var(--ns-color-line); border-radius: 8px; height: 16px; overflow: hidden; }
-.bfill { height: 16px; border-radius: 8px; }
-.crisis { border: 2px solid var(--ns-color-support); }
-.crisis .big { font-family: var(--ns-font-display); font-size: 48px; font-weight: 700; color: var(--ns-color-support); line-height: 1; }
-.privacy { background: var(--ns-color-primary-tint); border-radius: 20px; padding: 20px 24px; display: flex; flex-wrap: wrap; gap: 12px 32px; font-size: 14px; line-height: 20px; }
-.privacy strong { flex: 1 1 100%; font-size: 16px; }
-.privacy span { flex: 1 1 240px; }
+/* Built from the design board "4 · Impact dashboard". */
+body{margin:0;background:#FAF8F4}
+button{cursor:pointer}
+[hidden]{display:none !important}
+.wrap{min-height:100vh;background:#FAF8F4;color:#1B1F23;font-family:'Atkinson Hyperlegible',system-ui,sans-serif}
+.panel{background:#FFFFFF;border:1px solid #E3DFD7;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px}
+h2{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:22px}
+input{min-height:44px;border-radius:12px;border:2px solid #E3DFD7;padding:0 12px;font:16px 'Atkinson Hyperlegible',sans-serif}
 </style>
 </head>
 <body>
-<header><div class="hin">
-  <div class="brand">
-    <svg width="40" height="40" viewBox="0 0 48 48" role="img" aria-label="NextStep"><rect width="48" height="48" rx="14" fill="#0F5C5A"/><path d="M11 35h8v-7.5h8V20h9" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="12.5" r="3.6" fill="#F6C453"/></svg>
-    <div><span class="title">Impact dashboard</span><span class="sub">NextStep · Alamz Tech Ltd</span></div>
-  </div>
-  <div class="badges">
-    <span class="badge anon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11h10a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6a2 2 0 012-2z M8 11V8a4 4 0 018 0v3"/></svg>Anonymised aggregate data</span>
-    <span class="badge sample" id="sample" hidden>Sample / test data</span>
-  </div>
-</div></header>
-<main>
-  <section class="panel" id="login" hidden style="max-width:420px">
-    <h2>Sign in</h2>
-    <span class="muted">Platform or organisation admins only.</span>
-    <label>Username <input id="u" autocomplete="username" style="width:100%;min-height:44px;font:16px var(--ns-font-body)"></label>
-    <label>Password <input id="p" type="password" autocomplete="current-password" style="width:100%;min-height:44px;font:16px var(--ns-font-body)"></label>
-    <button type="button" id="go" style="min-height:44px;border-radius:999px;border:none;background:var(--ns-color-primary);color:var(--ns-color-on-primary);font-weight:700">Sign in</button>
-    <span id="err" class="muted" style="color:var(--ns-color-accent)"></span>
-  </section>
-  <div id="app" hidden style="display:contents">
-  <div class="filters">
-    <div class="ranges" role="group" aria-label="Date range" id="ranges"></div>
-    <div class="ranges" role="group" aria-label="Filters">
-      <select id="f-tier" aria-label="Age tier" style="min-height:44px"><option value="">All ages</option><option value="15_17">15–17</option><option value="18_24">18–24</option></select>
-      <select id="f-lang" aria-label="Language" style="min-height:44px"><option value="">All languages</option><option value="en">English</option><option value="pcm">Pidgin</option></select>
-      <select id="f-setting" aria-label="Setting" style="min-height:44px"><option value="">All settings</option><option value="school">School</option><option value="community">Community</option><option value="clinic">Clinic</option></select>
-      <select id="f-state" aria-label="State" style="min-height:44px"><option value="">All states</option><option value="lagos">Lagos</option></select>
+<div class="wrap">
+  <header style="background:#FFFFFF;border-bottom:1px solid #E3DFD7">
+    <div style="max-width:1280px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:12px">
+        <svg width="40" height="40" viewBox="0 0 48 48" role="img" aria-label="NextStep"><rect width="48" height="48" rx="14" fill="#0F5C5A"/><path d="M11 35h8v-7.5h8V20h9" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="12.5" r="3.6" fill="#F6C453"/></svg>
+        <div style="display:flex;flex-direction:column">
+          <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;line-height:26px">Impact dashboard</span>
+          <span style="font-size:14px;color:#4A5560">NextStep · Alamz Tech Ltd</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <span style="display:inline-flex;align-items:center;gap:8px;background:#DCEFEC;color:#0F5C5A;font-weight:700;font-size:14px;padding:8px 14px;border-radius:999px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11h10a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6a2 2 0 012-2z M8 11V8a4 4 0 018 0v3"/></svg>Anonymised aggregate data
+        </span>
+        <span id="sample" hidden style="background:#F6C453;color:#1B1F23;font-weight:700;font-size:14px;padding:8px 14px;border-radius:999px">Sample / test data</span>
+      </div>
     </div>
-    <span class="rtext"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2z M4 10h16 M9 3v4 M15 3v4"/></svg><span id="rtext"></span></span>
-  </div>
-  <div class="kpis" id="kpis" aria-live="polite"></div>
-  <section class="panel">
-    <div class="fhead"><h2>From "I might be at risk" to a confirmed visit</h2><span class="muted">Percent shows conversion from the step before</span></div>
-    <div id="funnel" style="display:flex;flex-direction:column;gap:14px"></div>
-    <span class="muted">Visits self-reported by learners (separate from clinic confirmations): <strong id="selfrep"></strong> (<span id="selfconv"></span> of referrals)</span>
-  </section>
-  <section class="panel">
-    <h2>Facilitator sessions</h2>
-    <div class="kpis" id="fac"></div>
-    <h3 style="margin:8px 0 0">Top question themes</h3>
-    <ol id="themes" class="muted" style="margin:0"></ol>
-  </section>
-  <div class="grid3">
-    <section class="panel"><h2>Conversations by age tier</h2><div id="ages" style="display:flex;flex-direction:column;gap:14px"></div><span class="muted">Under-15 users are shown a helpline and exit; only the count is kept.</span></section>
-    <section class="panel"><h2>Conversations by language</h2><div id="langs" style="display:flex;flex-direction:column;gap:14px"></div><span class="muted">Voice notes: <span id="voice"></span> of questions arrived as voice.</span></section>
-    <section class="panel crisis"><h2 style="display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--ns-color-support)"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 10c0 5.5-7 10-7 10z"/></svg>Crisis escalations</h2>
-      <span class="big" id="crisis"></span><span>Times support contacts were shared after a disclosure.</span>
-      <span class="muted">Count only. No message text, IDs or exact times are ever stored or shown.</span></section>
-  </div>
-  <section class="privacy">
-    <strong>Privacy rules for this dashboard</strong>
-    <span>No names, phone numbers, WhatsApp IDs or message content: events are counted at source and the raw chat is never stored.</span>
-    <span>Any count below 5 shows as "&lt;5" to prevent identifying individuals.</span>
-    <span>Daily granularity at most. Clinic-confirmed visits come from referral codes; self-reported visits are shown separately.</span>
-  </section>
-  </div>
-</main>
+  </header>
+
+  <main style="max-width:1280px;margin:0 auto;padding:24px;display:flex;flex-direction:column;gap:24px">
+    <section class="panel" id="login" hidden style="max-width:380px">
+      <h2>Sign in</h2>
+      <input id="u" aria-label="Username" placeholder="Username" autocomplete="username">
+      <input id="p" aria-label="Password" placeholder="Password" type="password" autocomplete="current-password">
+      <button type="button" id="go" style="min-height:44px;border-radius:999px;border:none;background:#0F5C5A;color:#FFFFFF;font:700 15px 'Atkinson Hyperlegible',sans-serif">Sign in</button>
+      <span id="err" style="color:#C2462E;font-size:14px"></span>
+    </section>
+
+    <div id="app" hidden style="display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
+        <div role="group" aria-label="Date range" id="ranges" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+        <span style="font-size:15px;color:#4A5560;display:inline-flex;align-items:center;gap:8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2z M4 10h16 M9 3v4 M15 3v4"/></svg><span id="rtext"></span></span>
+      </div>
+
+      <div id="kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px"></div>
+
+      <section class="panel" style="gap:18px">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:baseline">
+          <h2 style="font-size:24px">From "I might be at risk" to a visit</h2>
+          <span style="font-size:14px;color:#4A5560">Percent shows conversion from the step before</span>
+        </div>
+        <div id="funnel" style="display:flex;flex-direction:column;gap:14px"></div>
+      </section>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px">
+        <section class="panel">
+          <h2>Conversations by age tier</h2>
+          <div id="ages" style="display:flex;flex-direction:column;gap:16px"></div>
+          <span style="font-size:13px;color:#4A5560">Under-15 users are shown a helpline and exit; only the count is kept.</span>
+        </section>
+        <section class="panel">
+          <h2>Conversations by language</h2>
+          <div id="langs" style="display:flex;flex-direction:column;gap:16px"></div>
+          <span style="font-size:13px;color:#4A5560">Voice notes: <span id="voice"></span> of questions arrived as voice.</span>
+        </section>
+        <section class="panel" style="border:2px solid #2F5DA8;gap:12px">
+          <h2 style="display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F5DA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 10c0 5.5-7 10-7 10z"/></svg>Crisis escalations</h2>
+          <span id="crisis" style="font-family:'Bricolage Grotesque',sans-serif;font-size:48px;font-weight:700;color:#2F5DA8;line-height:1"></span>
+          <span style="font-size:15px">Times support contacts were shared after a disclosure.</span>
+          <span style="font-size:13px;line-height:20px;color:#4A5560">Count only. No message text, IDs, types below 5 or exact times are ever stored or shown.</span>
+        </section>
+      </div>
+
+      <section style="background:#DCEFEC;border-radius:20px;padding:20px 24px;display:flex;flex-wrap:wrap;gap:12px 32px;font-size:14px;line-height:20px;color:#0A403F">
+        <strong style="flex:1 1 100%;font-size:16px">Privacy rules for this dashboard</strong>
+        <span style="flex:1 1 260px">No names, phone numbers, WhatsApp IDs or message content: events are counted at source and the raw chat is never sent here.</span>
+        <span style="flex:1 1 260px">Any count below 5 shows as "&lt;5" to prevent identifying individuals.</span>
+        <span style="flex:1 1 260px">Daily granularity at most. Visits are confirmed by partner clinics entering the referral code.</span>
+      </section>
+    </div>
+  </main>
+</div>
 <script>
 (() => {
-  const RANGES = [['7', 'Last 7 days'], ['30', 'Last 30 days'], ['90', 'Last 90 days'], ['all', 'Since pilot start']];
-  let cur = '30';
-  let token = null;
+  const R = [['7', 'Last 7 days'], ['30', 'Last 30 days'], ['90', 'Last 90 days'], ['all', 'Since pilot start']];
+  let cur = '30', token = null;
   try { token = sessionStorage.getItem('ns-dash'); } catch (e) {}
   const $ = (id) => document.getElementById(id);
-  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
-  const COL = ['var(--ns-color-primary)', '#2D8A84', 'var(--ns-color-text-2)'];
-  function show(app) { $('login').hidden = app; $('app').hidden = !app; $('app').style.display = app ? 'contents' : 'none'; }
+  const el = (tag, css, text) => { const e = document.createElement(tag); if (css) e.style.cssText = css; if (text != null) e.textContent = text; return e; };
+  const show = (app) => { $('login').hidden = app; $('app').hidden = !app; };
+
   async function login() {
     $('err').textContent = '';
     const r = await fetch('/v1/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: $('u').value, password: $('p').value }) });
@@ -133,52 +108,58 @@ h2 { margin: 0; font-family: var(--ns-font-display); font-size: 22px; line-heigh
     token = d.token; try { sessionStorage.setItem('ns-dash', token); } catch (e) {}
     load();
   }
-  function ranges() {
-    const box = $('ranges'); box.textContent = '';
-    for (const [k, l] of RANGES) { const b = el('button', null, l); b.type = 'button'; b.setAttribute('aria-pressed', String(k === cur)); b.onclick = () => { cur = k; load(); }; box.appendChild(b); }
-  }
+
   function bars(id, items, colors) {
     const box = $(id); box.textContent = '';
     items.forEach((a, i) => {
-      const r = el('div', 'brow'); const top = el('div', 'top'); top.appendChild(el('strong', null, a.label)); top.appendChild(el('span', null, a.v + ' · ' + a.share)); r.appendChild(top);
-      const tr = el('div', 'btrack'); const f = el('div', 'bfill'); f.style.width = a.pct + '%'; f.style.background = colors[i % colors.length]; tr.appendChild(f); r.appendChild(tr); box.appendChild(r);
+      const row = el('div', 'display:flex;flex-direction:column;gap:6px');
+      const top = el('div', 'display:flex;justify-content:space-between;font-size:15px');
+      top.appendChild(el('strong', '', a.label)); top.appendChild(el('span', '', a.v + ' · ' + a.share)); row.appendChild(top);
+      const tr = el('div', 'background:#F0EDE7;border-radius:8px;height:16px;overflow:hidden');
+      tr.appendChild(el('div', `height:16px;width:${a.pct}%;background:${colors[i]};border-radius:8px`)); row.appendChild(tr);
+      box.appendChild(row);
     });
   }
+
   async function load() {
     if (!token) { show(false); return; }
-    ranges();
-    const q = new URLSearchParams({ range: cur, tier: $('f-tier').value, lang: $('f-lang').value, setting: $('f-setting').value, state: $('f-state').value });
-    const r = await fetch('/v1/dashboard/summary?' + q, { headers: { Authorization: 'Bearer ' + token } });
+    const r = await fetch('/v1/dashboard/summary?range=' + cur, { headers: { Authorization: 'Bearer ' + token } });
     if (r.status === 401 || r.status === 403) { token = null; try { sessionStorage.removeItem('ns-dash'); } catch (e) {} show(false); return; }
     const d = await r.json();
     show(true);
     $('sample').hidden = !d.sample;
+    const rb = $('ranges'); rb.textContent = '';
+    for (const [k, l] of R) {
+      const on = k === cur;
+      const b = el('button', `min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #0F5C5A;background:${on ? '#0F5C5A' : '#FFFFFF'};color:${on ? '#FFFFFF' : '#0F5C5A'};font:700 15px 'Atkinson Hyperlegible',sans-serif`, l);
+      b.type = 'button'; b.setAttribute('aria-pressed', String(on)); b.onclick = () => { cur = k; load(); }; rb.appendChild(b);
+    }
     $('rtext').textContent = d.range_text;
     const k = $('kpis'); k.textContent = '';
-    for (const x of d.kpis) { const p = el('div', 'panel kpi ' + (x.tone || '')); p.appendChild(el('span', 'l', x.label)); p.appendChild(el('span', 'v', x.v)); p.appendChild(el('span', 'n', x.note)); k.appendChild(p); }
+    for (const x of d.kpis) {
+      const p = el('div', 'background:#FFFFFF;border:1px solid #E3DFD7;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:4px');
+      p.appendChild(el('span', 'font-size:14px;color:#4A5560;font-weight:700', x.label));
+      p.appendChild(el('span', `font-family:'Bricolage Grotesque',sans-serif;font-size:36px;font-weight:700;color:${x.color}`, x.v));
+      p.appendChild(el('span', 'font-size:13px;color:#4A5560', x.note));
+      k.appendChild(p);
+    }
     const f = $('funnel'); f.textContent = '';
     for (const x of d.funnel) {
-      const row = el('div', 'frow'); row.appendChild(el('span', 'fl', x.label));
-      const tr = el('div', 'track'); const fill = el('div', 'fill ' + (x.tone || ''), x.v); fill.style.width = Math.max(x.pct, 0) + '%'; tr.appendChild(fill); row.appendChild(tr);
-      row.appendChild(el('span', 'fc', x.conv)); f.appendChild(row);
+      const row = el('div', 'display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center');
+      row.appendChild(el('span', 'flex:0 0 180px;font-size:16px;font-weight:700', x.label));
+      const tr = el('div', 'flex:1 1 320px;min-width:0;background:#F0EDE7;border-radius:10px;height:40px;overflow:hidden');
+      tr.appendChild(el('div', `height:40px;width:${x.pct}%;background:${x.color};border-radius:10px;display:flex;align-items:center;padding:0 12px;box-sizing:border-box;color:#FFFFFF;font-weight:700;font-size:16px;min-width:64px`, x.v));
+      row.appendChild(tr);
+      row.appendChild(el('span', 'flex:0 0 140px;font-size:14px;color:#4A5560', x.conv));
+      f.appendChild(row);
     }
-    $('selfrep').textContent = d.self_reported.v; $('selfconv').textContent = d.self_reported.conv;
-    const fa = $('fac'); fa.textContent = '';
-    for (const [label, v] of [['Sessions', d.facilitator.sessions], ['Approximate reach', d.facilitator.reach], ['Anonymous joins', d.facilitator.joins],
-      ['Questions', d.facilitator.questions], ['Crisis flags (count only)', d.facilitator.flags], ['Filtered', d.facilitator.filtered]]) {
-      const p = el('div', 'panel kpi'); p.appendChild(el('span', 'l', label)); p.appendChild(el('span', 'v', v)); fa.appendChild(p);
-    }
-    const th = $('themes'); th.textContent = '';
-    if (!d.facilitator.top_themes.length) th.appendChild(el('li', null, 'Themes with fewer than 5 questions are hidden.'));
-    for (const t of d.facilitator.top_themes) th.appendChild(el('li', null, `${t.label} · ${t.v}`));
-    bars('ages', d.ages, COL);
-    bars('langs', d.langs, ['var(--ns-color-primary)', 'var(--ns-color-accent)', '#2D8A84']);
+    bars('ages', d.ages, ['#0F5C5A', '#2D8A84', '#4A5560']);
+    bars('langs', d.langs, ['#0F5C5A', '#C2462E']);
     $('voice').textContent = d.voice_share;
     $('crisis').textContent = d.crisis;
   }
   $('go').onclick = login;
   $('p').addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
-  for (const id of ['f-tier', 'f-lang', 'f-setting', 'f-state']) $(id).onchange = load;
   load();
 })();
 </script>

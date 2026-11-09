@@ -8,13 +8,54 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/api.dart';
 import '../../core/state.dart';
-import '../../core/theme.dart';
-import '../../widgets/common.dart';
+import '../../widgets/chat_ui.dart';
 
-/// Staff screens are in English for the prototype (facilitators, clinic staff and admins).
+/// Staff screens (facilitators and partner clinics), in the impact-dashboard design style.
+/// Reached only by URL (/#/staff), never from the learner chat.
+const _bg = Color(0xFFFAF8F4), _line = Color(0xFFE3DFD7), _text2 = Color(0xFF4A5560);
+
+Widget _panel(Widget child) => Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: _line)),
+      child: child,
+    );
+
+Scaffold _page(BuildContext context, String title, List<Widget> children, {Widget? fab}) {
+  final s = context.read<AppState>();
+  return Scaffold(
+    backgroundColor: _bg,
+    floatingActionButton: fab,
+    appBar: AppBar(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
+      shape: const Border(bottom: BorderSide(color: _line)),
+      title: Row(children: [
+        SizedBox(width: 36, height: 36, child: CustomPaint(painter: StepsMark(stroke: Colors.white, dot: W.yellow, tile: W.teal))),
+        const SizedBox(width: 10),
+        Flexible(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w800))),
+      ]),
+      actions: [
+        if (s.staff != null)
+          TextButton(onPressed: () {
+            s.signOutStaff();
+            context.go('/staff');
+          }, child: Text('Sign out ${s.staff!.username}')),
+      ],
+    ),
+    body: Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 960),
+        child: ListView(padding: const EdgeInsets.all(16), children: children),
+      ),
+    ),
+  );
+}
+
+final _primary = FilledButton.styleFrom(backgroundColor: W.teal, minimumSize: const Size(48, 48), shape: const StadiumBorder());
+
 class StaffLoginScreen extends StatefulWidget {
-  const StaffLoginScreen({super.key, this.next});
-  final String? next;
+  const StaffLoginScreen({super.key});
   @override
   State<StaffLoginScreen> createState() => _StaffLoginScreenState();
 }
@@ -22,69 +63,43 @@ class StaffLoginScreen extends StatefulWidget {
 class _StaffLoginScreenState extends State<StaffLoginScreen> {
   final u = TextEditingController(), p = TextEditingController();
   String? err;
-  bool busy = false;
 
   Future<void> _login(AppState s) async {
-    setState(() {
-      busy = true;
-      err = null;
-    });
+    setState(() => err = null);
     try {
       final r = await s.api.post('/v1/auth/login', {'username': u.text.trim(), 'password': p.text}) as Map<String, dynamic>;
+      if (!{'facilitator', 'clinic_partner'}.contains(r['role'])) {
+        setState(() => err = 'Admins use the dashboard at /dashboard.');
+        return;
+      }
       s.api.staffToken = r['token'];
       s.staff = Staff(r['role'], r['username'], (r['org'] as Map?)?['name']);
-      s.notifyListeners();
-      if (!mounted) return;
-      context.go(switch (r['role']) { 'clinic_partner' => '/clinic', 'facilitator' => '/staff/sessions', _ => '/staff/admin' });
+      if (mounted) context.go(r['role'] == 'clinic_partner' ? '/clinic' : '/staff/sessions');
     } on ApiException catch (e) {
       setState(() => err = e.message);
     } on OfflineException {
       setState(() => err = 'No connection.');
-    } finally {
-      if (mounted) setState(() => busy = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final s = context.watch<AppState>();
-    return Scaffold(
-      appBar: AppBar(title: const Text('Staff sign-in')),
-      body: SafeArea(
-        child: NsPage(maxWidth: 420, children: [
-          const Logo(size: 48),
-          const SizedBox(height: 12),
-          Text('Facilitators, partner clinics and admins', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 4),
-          Text('Accounts are created by your organisation admin.', style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 16),
-          TextField(key: const Key('staff-user'), controller: u, decoration: const InputDecoration(labelText: 'Username'), autofillHints: const [AutofillHints.username]),
+    final s = context.read<AppState>();
+    return _page(context, 'Staff sign-in', [
+      ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: _panel(Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          TextField(key: const Key('staff-user'), controller: u, decoration: const InputDecoration(labelText: 'Username')),
           const SizedBox(height: 10),
           TextField(key: const Key('staff-pass'), controller: p, obscureText: true, decoration: const InputDecoration(labelText: 'Password'),
-              onSubmitted: (_) => _login(s), autofillHints: const [AutofillHints.password]),
-          if (err != null) Padding(padding: const EdgeInsets.only(top: 8), child: Text(err!, style: TextStyle(color: NsColors.of(context).accent))),
+              onSubmitted: (_) => _login(s)),
+          if (err != null) Padding(padding: const EdgeInsets.only(top: 8), child: Text(err!, style: const TextStyle(color: Color(0xFFC2462E)))),
           const SizedBox(height: 16),
-          FilledButton(key: const Key('staff-login'), onPressed: busy ? null : () => _login(s), child: const Text('Sign in')),
-        ]),
+          FilledButton(key: const Key('staff-login'), style: _primary, onPressed: () => _login(s), child: const Text('Sign in')),
+        ])),
       ),
-    );
+    ]);
   }
-}
-
-AppBar staffBar(BuildContext context, String title, {List<Widget> actions = const []}) {
-  final s = context.read<AppState>();
-  return AppBar(title: Text(title), actions: [
-    ...actions,
-    if (s.staff != null)
-      TextButton.icon(
-        onPressed: () {
-          s.signOutStaff();
-          context.go('/');
-        },
-        icon: const Icon(Icons.logout),
-        label: Text(s.staff!.username),
-      ),
-  ]);
 }
 
 // ------------------------------------------------------------------ facilitator
@@ -103,60 +118,43 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   Future<void> _load() async {
-    final s = context.read<AppState>();
     try {
-      final r = await s.api.get('/v1/sessions', staff: true) as Map<String, dynamic>;
+      final r = await context.read<AppState>().api.get('/v1/sessions', staff: true) as Map<String, dynamic>;
       setState(() => sessions = r['sessions']);
     } catch (_) {}
   }
 
   Future<void> _create(AppState s) async {
-    String setting = 'school', band = '15_17', lang = 'en';
-    DateTime date = DateTime.now();
+    String setting = 'school', band = '15_17';
     final size = TextEditingController(text: '30');
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, set) => AlertDialog(
           title: const Text('New session'),
-          content: SingleChildScrollView(
-            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-              DropdownButtonFormField(value: setting, decoration: const InputDecoration(labelText: 'Setting'),
-                  items: const [DropdownMenuItem(value: 'school', child: Text('School')), DropdownMenuItem(value: 'community', child: Text('Community')),
-                    DropdownMenuItem(value: 'clinic', child: Text('Clinic'))], onChanged: (v) => set(() => setting = v!)),
-              const SizedBox(height: 10),
-              DropdownButtonFormField(value: band, decoration: const InputDecoration(labelText: 'Audience age band'),
-                  items: const [DropdownMenuItem(value: '15_17', child: Text('15–17')), DropdownMenuItem(value: '18_24', child: Text('18–24'))],
-                  onChanged: (v) => set(() => band = v!)),
-              const Padding(padding: EdgeInsets.only(top: 4), child: Text('Younger audiences are out of scope for this prototype.', style: TextStyle(fontSize: 12))),
-              const SizedBox(height: 10),
-              DropdownButtonFormField(value: lang, decoration: const InputDecoration(labelText: 'Language for students'),
-                  items: const [DropdownMenuItem(value: 'en', child: Text('English')), DropdownMenuItem(value: 'pcm', child: Text('Pidgin'))],
-                  onChanged: (v) => set(() => lang = v!)),
-              const SizedBox(height: 10),
-              TextField(controller: size, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Approximate audience size')),
-              const SizedBox(height: 10),
-              OutlinedButton.icon(
-                icon: const Icon(Icons.event),
-                label: Text('Date: ${date.toIso8601String().substring(0, 10)}'),
-                onPressed: () async {
-                  final d = await showDatePicker(context: ctx, initialDate: date, firstDate: DateTime(2026), lastDate: DateTime(2030));
-                  if (d != null) set(() => date = d);
-                },
-              ),
-            ]),
-          ),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            DropdownButtonFormField(value: setting, decoration: const InputDecoration(labelText: 'Setting'), items: const [
+              DropdownMenuItem(value: 'school', child: Text('School')),
+              DropdownMenuItem(value: 'community', child: Text('Community')),
+              DropdownMenuItem(value: 'clinic', child: Text('Clinic')),
+            ], onChanged: (v) => set(() => setting = v!)),
+            DropdownButtonFormField(value: band, decoration: const InputDecoration(labelText: 'Audience age'), items: const [
+              DropdownMenuItem(value: '15_17', child: Text('15–17')),
+              DropdownMenuItem(value: '18_24', child: Text('18–24')),
+            ], onChanged: (v) => set(() => band = v!)),
+            TextField(controller: size, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Approximate audience size')),
+          ]),
           actions: [
             TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-            FilledButton(key: const Key('create-session'), onPressed: () => Navigator.pop(ctx, true), child: const Text('Create')),
+            FilledButton(key: const Key('create-session'), style: _primary, onPressed: () => Navigator.pop(ctx, true), child: const Text('Create')),
           ],
         ),
       ),
     );
     if (ok != true) return;
     try {
-      final r = await s.api.post('/v1/sessions', {'setting': setting, 'session_date': date.toIso8601String().substring(0, 10), 'age_band': band,
-        'audience_size': int.tryParse(size.text) ?? 30, 'lang': lang}, true) as Map<String, dynamic>;
+      final r = await s.api.post('/v1/sessions', {'setting': setting, 'session_date': DateTime.now().toIso8601String().substring(0, 10),
+        'age_band': band, 'audience_size': int.tryParse(size.text) ?? 30, 'lang': s.lang}, true) as Map<String, dynamic>;
       if (mounted) context.push('/staff/session/${r['id']}');
       _load();
     } on ApiException catch (e) {
@@ -166,29 +164,21 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final s = context.watch<AppState>();
-    return Scaffold(
-      appBar: staffBar(context, 'Sessions', actions: [
-        IconButton(tooltip: 'Session kits', onPressed: () => context.push('/staff/kits'), icon: const Icon(Icons.menu_book_outlined)),
-      ]),
-      floatingActionButton: FloatingActionButton.extended(key: const Key('new-session'), onPressed: () => _create(s), icon: const Icon(Icons.add), label: const Text('New session')),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: NsPage(children: [
-          if (s.staff?.orgName != null) Text(s.staff!.orgName!, style: Theme.of(context).textTheme.bodySmall),
-          if (sessions.isEmpty) const Padding(padding: EdgeInsets.all(24), child: Text('No sessions yet. Create one to get a QR code and join code.')),
-          for (final x in sessions)
-            Card(
-              child: ListTile(
-                title: Text('${x['setting']} · ${x['session_date']}'),
-                subtitle: Text('Age ${x['age_band'].toString().replaceAll('_', '–')} · about ${x['audience_size']} people · ${x['submitted']} questions · ${x['status']}'),
-                trailing: Text(x['join_code'], style: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: 2)),
-                onTap: () => context.push('/staff/session/${x['id']}'),
-              ),
-            ),
-        ]),
-      ),
-    );
+    final s = context.read<AppState>();
+    return _page(context, 'Sessions', [
+      for (final x in sessions)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: _panel(ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text('${x['setting']} · ${x['session_date']} · ${x['age_band'].toString().replaceAll('_', '–')}'),
+            subtitle: Text('${x['submitted']} questions · ${x['status']}'),
+            trailing: Text(x['join_code'], style: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: 2)),
+            onTap: () => context.push('/staff/session/${x['id']}'),
+          )),
+        ),
+    ], fab: FloatingActionButton.extended(key: const Key('new-session'), backgroundColor: W.teal, foregroundColor: Colors.white,
+        onPressed: () => _create(s), icon: const Icon(Icons.add), label: const Text('New session')));
   }
 }
 
@@ -202,12 +192,6 @@ class SessionScreen extends StatefulWidget {
 class _SessionScreenState extends State<SessionScreen> {
   Map<String, dynamic>? data;
   Timer? timer;
-  static const checklistLabels = {
-    'school_permission': 'School permission obtained',
-    'consent_requirements': 'Consent requirements met (e.g. parent/guardian where required)',
-    'safeguarding_contact': 'Safeguarding contact identified for this session',
-    'support_contacts_ready': 'Verified support contacts ready to share with the group',
-  };
 
   @override
   void initState() {
@@ -223,162 +207,101 @@ class _SessionScreenState extends State<SessionScreen> {
   }
 
   Future<void> _load() async {
-    final s = context.read<AppState>();
     try {
-      final r = await s.api.get('/v1/sessions/${widget.id}/themes', staff: true) as Map<String, dynamic>;
+      final r = await context.read<AppState>().api.get('/v1/sessions/${widget.id}/themes', staff: true) as Map<String, dynamic>;
       if (mounted) setState(() => data = r);
     } catch (_) {}
   }
 
   Future<void> _download(AppState s, String fmt) async {
-    try {
-      final r = await s.api.post('/v1/sessions/${widget.id}/report-link?format=$fmt', {}, true) as Map<String, dynamic>;
-      await launchUrl(Uri.parse(s.api.absolute(r['url'])), mode: LaunchMode.externalApplication);
-    } catch (_) {}
+    final r = await s.api.post('/v1/sessions/${widget.id}/report-link?format=$fmt', {}, true) as Map<String, dynamic>;
+    await launchUrl(Uri.parse(s.api.absolute(r['url'])), mode: LaunchMode.externalApplication);
   }
 
   @override
   Widget build(BuildContext context) {
-    final s = context.watch<AppState>();
-    final c = NsColors.of(context);
-    final tt = Theme.of(context).textTheme;
-    if (data == null) return Scaffold(appBar: staffBar(context, 'Session'), body: const Center(child: CircularProgressIndicator()));
+    final s = context.read<AppState>();
+    if (data == null) return _page(context, 'Session', [const Center(child: CircularProgressIndicator())]);
     final ses = data!['session'] as Map<String, dynamic>;
     final themes = (data!['themes'] as List).cast<Map<String, dynamic>>();
     final checklist = (ses['checklist'] as Map?)?.cast<String, dynamic>() ?? {};
-    final open = ses['status'] == 'open';
-    return Scaffold(
-      appBar: staffBar(context, 'Session ${ses['join_code']}', actions: [
-        IconButton(tooltip: 'Projector view', onPressed: () => context.push('/staff/projector/${widget.id}'), icon: const Icon(Icons.cast)),
-      ]),
-      body: NsPage(maxWidth: 900, children: [
-        Wrap(spacing: 16, runSpacing: 16, children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(children: [
-                Container(color: Colors.white, padding: const EdgeInsets.all(8),
-                    child: QrImageView(data: ses['join_url'], size: 200, backgroundColor: Colors.white)),
-                const SizedBox(height: 8),
-                Text(ses['join_code'], key: const Key('join-code'),
-                    style: TextStyle(fontFamily: kDisplay, fontSize: 34, fontWeight: FontWeight.w800, letterSpacing: 6, color: c.primary)),
-                SelectableText(ses['join_url'], style: tt.bodySmall),
-                const SizedBox(height: 4),
-                Text('Students scan, no install or login.', style: tt.bodySmall),
-              ]),
-            ),
-          ),
-          SizedBox(
-            width: 380,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('${ses['setting']} · ${ses['session_date']} · age ${ses['age_band'].toString().replaceAll('_', '–')}', style: tt.titleMedium),
-                  const SizedBox(height: 8),
-                  Wrap(spacing: 8, runSpacing: 8, children: [
-                    _stat(context, 'Joined', ses['joins']),
-                    _stat(context, 'Questions', ses['submitted']),
-                    _stat(context, 'Filtered', ses['filtered']),
-                    _stat(context, 'Referral codes', ses['referral_cards']),
-                  ]),
-                  const SizedBox(height: 12),
-                  if ((data!['flagged_count'] ?? 0) > 0)
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: c.supportTint, borderRadius: BorderRadius.circular(12), border: Border.all(color: c.support, width: 2)),
-                      child: Text('${data!['flagged_count']} question(s) flagged for support. ${data!['support_reminder']}', key: const Key('flag-reminder')),
-                    ),
-                  const SizedBox(height: 12),
-                  Wrap(spacing: 8, runSpacing: 8, children: [
-                    OutlinedButton.icon(onPressed: () => _download(s, 'csv'), icon: const Icon(Icons.table_view), label: const Text('Report CSV')),
-                    OutlinedButton.icon(onPressed: () => _download(s, 'pdf'), icon: const Icon(Icons.picture_as_pdf_outlined), label: const Text('Report PDF')),
-                    if (open)
-                      TextButton(
-                        onPressed: () async {
-                          await s.api.post('/v1/sessions/${widget.id}/close', {}, true);
-                          _load();
-                        },
-                        child: const Text('Close session (deletes question text)'),
-                      ),
-                  ]),
-                ]),
+    return _page(context, 'Session ${ses['join_code']}', [
+      Wrap(spacing: 16, runSpacing: 16, children: [
+        _panel(Column(children: [
+          QrImageView(data: ses['join_url'], size: 200, backgroundColor: Colors.white),
+          Text(ses['join_code'], key: const Key('join-code'),
+              style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, letterSpacing: 6, color: W.teal)),
+          SelectableText(ses['join_url'], style: const TextStyle(fontSize: 12, color: _text2)),
+        ])),
+        SizedBox(
+          width: 380,
+          child: _panel(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Joined ${ses['joins']} · Questions ${ses['submitted']} · Filtered ${ses['filtered']}'),
+            if ((data!['flagged_count'] ?? 0) > 0)
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: W.blue, width: 2)),
+                child: Text('${data!['flagged_count']} flagged for support. ${data!['support_reminder']}', key: const Key('flag-reminder')),
               ),
-            ),
-          ),
-        ]),
-        if (ses['setting'] == 'school') ...[
-          const SizedBox(height: 16),
-          Text('Before a school session', style: tt.titleLarge),
-          Text('A reminder checklist only. This is not legal advice.', style: tt.bodySmall),
-          for (final e in checklistLabels.entries)
+            const SizedBox(height: 12),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              OutlinedButton(onPressed: () => context.push('/staff/projector/${widget.id}'), child: const Text('Projector')),
+              OutlinedButton(onPressed: () => _download(s, 'csv'), child: const Text('Report CSV')),
+              OutlinedButton(onPressed: () => _download(s, 'pdf'), child: const Text('Report PDF')),
+              if (ses['status'] == 'open')
+                TextButton(onPressed: () async {
+                  await s.api.post('/v1/sessions/${widget.id}/close', {}, true);
+                  _load();
+                }, child: const Text('Close session')),
+            ]),
+          ])),
+        ),
+      ]),
+      if (ses['setting'] == 'school') ...[
+        const SizedBox(height: 16),
+        _panel(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('Before a school session (reminder only, not legal advice)', style: TextStyle(fontWeight: FontWeight.w700)),
+          for (final (k, label) in [('school_permission', 'School permission obtained'), ('consent_requirements', 'Consent requirements met')])
             CheckboxListTile(
-              value: checklist[e.key] == true,
-              title: Text(e.value),
+              contentPadding: EdgeInsets.zero,
+              value: checklist[k] == true,
+              title: Text(label),
               onChanged: (v) async {
-                checklist[e.key] = v == true;
+                checklist[k] = v == true;
                 await s.api.post('/v1/sessions/${widget.id}/checklist', {'items': checklist}, true);
                 _load();
               },
             ),
-        ],
-        const SizedBox(height: 16),
-        Text('Question themes', style: tt.titleLarge),
-        Text('Grouped automatically. Raw questions are never shown. Suggested answers come only from the reviewed knowledge base.', style: tt.bodySmall),
-        const SizedBox(height: 8),
-        if (themes.isEmpty) const Text('No questions yet.'),
-        for (final t in themes) _theme(context, s, t),
-      ]),
-    );
-  }
-
-  Widget _stat(BuildContext context, String label, dynamic v) {
-    final c = NsColors.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(color: c.bg, borderRadius: BorderRadius.circular(12)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('$v', style: const TextStyle(fontFamily: kDisplay, fontSize: 24, fontWeight: FontWeight.w700)),
-        Text(label, style: Theme.of(context).textTheme.bodySmall),
-      ]),
-    );
-  }
-
-  Widget _theme(BuildContext context, AppState s, Map<String, dynamic> t) {
-    final sug = t['suggested'] as Map<String, dynamic>?;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Card(
-        child: ExpansionTile(
-          shape: const Border(),
-          title: Text(t['label']),
-          subtitle: Text('${t['count']} question(s)${t['answered'] == true ? ' · answered' : ''}'),
-          leading: Icon(t['answered'] == true ? Icons.check_circle : Icons.help_outline, color: NsColors.of(context).primary),
-          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          expandedCrossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (sug != null) ...[
-              Text(sug['text']),
-              SourcesLine(sources: sug['sources'] ?? []),
-              if (sug['draft'] == true) const DraftChip(),
-            ] else
-              const Text('No reviewed answer in the knowledge base yet. Answer from your training, or refer students to a service.'),
-            const SizedBox(height: 8),
-            FilledButton.tonal(
-              onPressed: () async {
-                await s.api.post('/v1/sessions/${widget.id}/themes/answered', {'key': t['key'], 'answered': t['answered'] != true}, true);
-                _load();
-              },
-              child: Text(t['answered'] == true ? 'Mark not answered' : 'Mark answered'),
-            ),
-          ],
+        ])),
+      ],
+      const SizedBox(height: 16),
+      for (final t in themes)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: _panel(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Expanded(child: Text('${t['label']} · ${t['count']}', style: const TextStyle(fontWeight: FontWeight.w700, color: W.teal))),
+              Checkbox(
+                value: t['answered'] == true,
+                onChanged: (v) async {
+                  await s.api.post('/v1/sessions/${widget.id}/themes/answered', {'key': t['key'], 'answered': v == true}, true);
+                  _load();
+                },
+              ),
+            ]),
+            if (t['suggested'] != null) ...[
+              Text(t['suggested']['text']),
+              const SizedBox(height: 6),
+              Text('Source: ${(t['suggested']['sources'] as List).first['source_document']}', style: const TextStyle(fontSize: 12, color: _text2)),
+            ],
+          ])),
         ),
-      ),
-    );
+    ]);
   }
 }
 
-/// Large-type view for a projector: themes and grounded answers, never raw questions.
+/// Large-type view for a projector: themes and grounded answers only, never raw questions.
 class ProjectorScreen extends StatefulWidget {
   const ProjectorScreen({super.key, required this.id});
   final String id;
@@ -411,37 +334,22 @@ class _ProjectorScreenState extends State<ProjectorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final c = NsColors.light;
     final themes = ((data?['themes'] as List?) ?? []).cast<Map<String, dynamic>>();
-    return Theme(
-      data: buildTheme(Brightness.light),
-      child: Scaffold(
-        backgroundColor: c.bg,
-        appBar: AppBar(title: Text('Join with code ${data?['join_code'] ?? ''}')),
-        body: ListView(padding: const EdgeInsets.all(32), children: [
-          const Text('Your questions, answered', style: TextStyle(fontFamily: kDisplay, fontSize: 44, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 24),
-          for (final t in themes)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(24), border: Border.all(color: c.line, width: 2)),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('${t['label']}  ·  ${t['count']}', style: TextStyle(fontFamily: kDisplay, fontSize: 32, fontWeight: FontWeight.w700, color: c.primary)),
-                  const SizedBox(height: 12),
-                  Text(t['answer'] ?? 'Your facilitator will answer this one.', style: const TextStyle(fontSize: 26, height: 1.4)),
-                  if ((t['sources'] as List?)?.isNotEmpty == true)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Text('Source: ${(t['sources'] as List).first['source_document']}', style: TextStyle(fontSize: 16, color: c.text2)),
-                    ),
-                ]),
-              ),
-            ),
-          Text('General information, not medical advice. Draft content pending clinician review.', style: TextStyle(fontSize: 18, color: c.text2)),
-        ]),
-      ),
+    return Scaffold(
+      backgroundColor: _bg,
+      body: ListView(padding: const EdgeInsets.all(32), children: [
+        Text('Code ${data?['join_code'] ?? ''}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: W.teal)),
+        const SizedBox(height: 20),
+        for (final t in themes)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: _panel(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(t['label'], style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: W.teal)),
+              const SizedBox(height: 10),
+              if (t['answer'] != null) Text(t['answer'], style: const TextStyle(fontSize: 24, height: 1.4)),
+            ])),
+          ),
+      ]),
     );
   }
 }
@@ -456,148 +364,50 @@ class ClinicScreen extends StatefulWidget {
 class _ClinicScreenState extends State<ClinicScreen> {
   final code = TextEditingController();
   String? status;
-  bool busy = false;
 
   Future<void> _confirm(AppState s) async {
-    setState(() => busy = true);
     try {
       final r = await s.api.post('/v1/clinic/confirm', {'code': code.text.trim().toUpperCase()}, true) as Map<String, dynamic>;
       setState(() => status = r['status']);
       if (r['status'] == 'confirmed') code.clear();
-    } on ApiException catch (e) {
-      setState(() => status = e.message);
-    } on OfflineException {
+    } catch (_) {
       setState(() => status = 'offline');
-    } finally {
-      setState(() => busy = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final s = context.watch<AppState>();
-    final c = NsColors.of(context);
-    final msg = {
-      'confirmed': ('Visit confirmed. Thank you.', c.success),
-      'already_confirmed': ('This code was already confirmed.', c.text2),
-      'not_found': ('Code not found. Check the letters and try again.', c.accent),
-      'expired': ('This code has expired.', c.accent),
-      'offline': ('No connection.', c.accent),
-    }[status];
-    return Scaffold(
-      appBar: staffBar(context, 'Confirm a referral'),
-      body: NsPage(maxWidth: 480, children: [
-        Text(s.staff?.orgName ?? '', style: Theme.of(context).textTheme.bodySmall),
-        const SizedBox(height: 8),
-        Text('Enter the code the young person shows you.', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 4),
-        Text('No names or clinical details are needed or stored.', style: Theme.of(context).textTheme.bodySmall),
-        const SizedBox(height: 16),
-        TextField(
-          key: const Key('clinic-code'),
-          controller: code,
-          textCapitalization: TextCapitalization.characters,
-          maxLength: 8,
-          style: const TextStyle(fontFamily: kDisplay, fontSize: 32, letterSpacing: 6, fontWeight: FontWeight.w800),
-          decoration: const InputDecoration(hintText: 'ABC123', counterText: ''),
-          onSubmitted: (_) => _confirm(s),
-        ),
-        const SizedBox(height: 12),
-        FilledButton(key: const Key('clinic-confirm'), onPressed: busy ? null : () => _confirm(s), child: const Text('Confirm visit')),
-        const SizedBox(height: 16),
-        if (msg != null) Text(msg.$1, key: const Key('clinic-status'), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: msg.$2))
-        else if (status != null) Text(status!),
-      ]),
-    );
-  }
-}
-
-// ------------------------------------------------------------------ admin
-class AdminScreen extends StatefulWidget {
-  const AdminScreen({super.key});
-  @override
-  State<AdminScreen> createState() => _AdminScreenState();
-}
-
-class _AdminScreenState extends State<AdminScreen> {
-  List users = [], orgs = [];
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
     final s = context.read<AppState>();
-    try {
-      final u = await s.api.get('/v1/admin/users', staff: true) as Map<String, dynamic>;
-      final o = await s.api.get('/v1/admin/orgs', staff: true) as Map<String, dynamic>;
-      setState(() {
-        users = u['users'];
-        orgs = o['orgs'];
-      });
-    } catch (_) {}
-  }
-
-  Future<void> _addUser(AppState s) async {
-    final u = TextEditingController(), p = TextEditingController();
-    String role = 'facilitator';
-    String? org = orgs.isNotEmpty ? orgs.first['id'] : null;
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, set) => AlertDialog(
-          title: const Text('New account'),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            TextField(controller: u, decoration: const InputDecoration(labelText: 'Username')),
-            const SizedBox(height: 8),
-            TextField(controller: p, obscureText: true, decoration: const InputDecoration(labelText: 'Temporary password (10+ chars)')),
-            const SizedBox(height: 8),
-            DropdownButtonFormField(value: role, items: const [
-              DropdownMenuItem(value: 'facilitator', child: Text('Facilitator')),
-              DropdownMenuItem(value: 'clinic_partner', child: Text('Clinic partner')),
-              DropdownMenuItem(value: 'org_admin', child: Text('Org admin')),
-            ], onChanged: (v) => set(() => role = v!)),
-            if (s.staff?.role == 'platform_admin' && orgs.isNotEmpty)
-              DropdownButtonFormField<String>(value: org, items: [for (final o in orgs) DropdownMenuItem(value: o['id'], child: Text(o['name']))],
-                  onChanged: (v) => set(() => org = v)),
-          ]),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Create')),
-          ],
-        ),
-      ),
-    );
-    if (ok != true) return;
-    try {
-      await s.api.post('/v1/admin/users', {'username': u.text.trim(), 'password': p.text, 'role': role, 'org_id': org}, true);
-      _load();
-    } on ApiException catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final s = context.watch<AppState>();
-    return Scaffold(
-      appBar: staffBar(context, 'Organisation admin'),
-      floatingActionButton: FloatingActionButton.extended(onPressed: () => _addUser(s), icon: const Icon(Icons.person_add), label: const Text('Add account')),
-      body: NsPage(children: [
-        Card(
-          child: ListTile(
-            leading: const Icon(Icons.insights),
-            title: const Text('Impact dashboard'),
-            subtitle: const Text('Aggregate counts only'),
-            onTap: () => launchUrl(Uri.parse(s.api.absolute('/dashboard'))),
+    const msg = {
+      'confirmed': 'Visit confirmed.',
+      'already_confirmed': 'Already confirmed.',
+      'not_found': 'Code not found.',
+      'expired': 'Code expired.',
+      'offline': 'No connection.',
+    };
+    return _page(context, 'Confirm a referral', [
+      ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: _panel(Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          TextField(
+            key: const Key('clinic-code'),
+            controller: code,
+            maxLength: 8,
+            textCapitalization: TextCapitalization.characters,
+            style: const TextStyle(fontSize: 30, letterSpacing: 6, fontWeight: FontWeight.w800),
+            decoration: const InputDecoration(labelText: 'Referral code', counterText: ''),
+            onSubmitted: (_) => _confirm(s),
           ),
-        ),
-        const SizedBox(height: 12),
-        Text('Accounts', style: Theme.of(context).textTheme.titleLarge),
-        for (final u in users)
-          ListTile(title: Text(u['username']), subtitle: Text(u['role']), trailing: u['active'] == 1 ? null : const Text('disabled')),
-      ]),
-    );
+          const SizedBox(height: 12),
+          FilledButton(key: const Key('clinic-confirm'), style: _primary, onPressed: () => _confirm(s), child: const Text('Confirm visit')),
+          if (status != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 14),
+              child: Text(msg[status] ?? status!, key: const Key('clinic-status'),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: status == 'confirmed' ? const Color(0xFF2E7D4F) : const Color(0xFFC2462E))),
+            ),
+        ])),
+      ),
+    ]);
   }
 }

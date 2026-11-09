@@ -525,7 +525,7 @@ class Engine:
         elif b == "ref_remind":
             r.actions.append({"type": "schedule_followups", "lang": st["lang"], "tier": st.get("tier")})
             r.events.append(("reminder_opt_in", "", ""))
-            r.messages.append(self.m(("referral", "remind_ok"), buttons=["sim_skip3"]))
+            r.messages.append(self.m(("referral", "remind_ok"), buttons=["sim_skip3"] if self.demo_mode else None))
         elif b == "sim_skip3":
             r.actions.append({"type": "simulate_followup"})
         elif b in ("fu_yes", "fu_not_yet", "fu_help", "fu_later", "fu_good", "fu_not_good", "fu_skip",
@@ -593,6 +593,8 @@ class Engine:
         }
         r.messages.append(self.m(("referral", "expect"), kind="card", card=card,
                                  buttons=["ref_directions", "ref_another", "ref_remind"]))
+        # The channel turns this into a short referral code shown on the card (clinics confirm it).
+        r.actions.append({"type": "referral", "service_id": s.id, "state": s.state, "lang": st["lang"], "tier": st.get("tier") or ""})
 
     # ------------------------------------------------------------ follow-up
     def _followup_due(self, r: Result, st: dict, inp: Inbound) -> None:

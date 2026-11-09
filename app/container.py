@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import re
 import time
 from dataclasses import dataclass
 
@@ -46,7 +47,10 @@ class Container:
         return hash_id(f"{channel}:{raw_id}", self.settings.hmac_secret)
 
     def process(self, channel: str, raw_id: str, inp: Inbound, recipient: str | None = None) -> Result:
-        """Chat channels only (WhatsApp, simulator). The Flutter app uses the stateless /v1 API."""
+        """Run one chat event (app, WhatsApp or simulator) through the engine and apply the result.
+
+        Channel "app": follow-up reminders are scheduled ON THE DEVICE (the actions are returned
+        to the app), so the server keeps no reminder rows for app users."""
         uid = self.uid(channel, raw_id)
         state = self.repo.get_session(uid)
         res = self.engine.handle(state, inp)
@@ -61,10 +65,23 @@ class Container:
             t = a["type"]
             if t == "delete_user":
                 self.repo.delete_user(uid)
-            elif t in ("schedule_followups", "ensure_followup"):
+                self.repo.delete_install(uid)
+            elif t in ("schedule_followups", "ensure_followup") and channel != "app":
                 self._schedule(uid, channel, recipient, a, only_one=(t == "ensure_followup"))
             elif t == "cancel_followups":
                 self.repo.cancel_reminders(uid)
+            elif t == "referral":
+                code = self.repo.create_referral(uid, a["service_id"], re.sub(r"[^a-z0-9_-]", "", a["state"].lower()),
+                                                 a["tier"], a["lang"], "", self.settings.referral_ttl_days)
+                for m in reversed(res.messages):
+                    if m.get("kind") == "card" and m["card"]["id"] == a["service_id"]:
+                        m["card"]["code"] = code
+                        break
+                try:
+                    self.repo.log_event("referral_issued", "verified" if self.finder.by_id(a["service_id"]).verified else "demo",
+                                        lang=a["lang"], tier=a["tier"], state=re.sub(r"[^a-z0-9_-]", "", a["state"].lower()))
+                except ValueError:
+                    pass
         if res.delete:
             self.repo.delete_user(uid)
         elif res.state is not None:

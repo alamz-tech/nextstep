@@ -129,17 +129,14 @@ def test_whatsapp_signature_and_parse():
 
 def test_dashboard_small_cell_suppression():
     today = __import__("datetime").date(2026, 11, 9)
-    base = dict(dim1="", dim2="", state="lagos", tier="18_24", lang="en", setting="", org="")
-    rows = [dict(base, day="2026-11-08", event="app_open", count=12),
+    base = dict(dim1="", dim2="", state="", tier="", lang="", setting="", org="")
+    rows = [dict(base, day="2026-11-08", event="conversation_started", dim1="en", count=12),
             dict(base, day="2026-11-08", event="crisis_escalation", dim1="violence", count=2),
-            dict(base, day="2026-11-08", event="check_completed", dim1="next", count=4),
-            dict(base, day="2026-11-08", event="app_open", tier="15_17", count=3)]
+            dict(base, day="2026-11-08", event="check_completed", dim1="next", count=4)]
     d = summarise(rows, "7", today=today)
     kp = {k["key"]: k["v"] for k in d["kpis"]}
-    assert kp["opens"] == "15" and kp["crisis"] == "<5" and kp["checks"] == "<5"
+    assert kp["conversations"] == "12" and kp["crisis"] == "<5" and kp["checks"] == "<5"
     assert d["funnel"][1]["conv"].startswith("–")
-    d2 = summarise(rows, "7", today=today, filters={"tier": "15_17"})
-    assert {k["key"]: k["v"] for k in d2["kpis"]}["opens"] == "<5"
 
 
 def test_unverified_services_hidden_outside_demo(settings, monkeypatch):

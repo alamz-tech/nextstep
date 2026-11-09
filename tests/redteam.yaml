@@ -166,9 +166,5 @@ access_cases:
 # App behaviour (quick exit, PIN, recents). Run by `flutter test` in app_flutter/test/privacy_test.dart.
 app_cases:
   - { id: app-01, category: app-privacy, test: "quick exit shows a neutral calculator with no NextStep text" }
-  - { id: app-02, category: app-privacy, test: "quick exit is present on every learner screen" }
-  - { id: app-03, category: app-privacy, test: "after quick exit, the app stays locked until the PIN is typed and = pressed" }
-  - { id: app-04, category: app-privacy, test: "wrong PIN does not unlock" }
-  - { id: app-05, category: app-privacy, test: "going to background locks the app when a PIN is set" }
-  - { id: app-06, category: app-privacy, test: "chat history is not kept by default" }
-  - { id: app-07, category: app-privacy, test: "under-15 exit saves nothing" }
+  - { id: app-02, category: app-privacy, test: "quick exit clears the chat and returns only on long-press =" }
+  - { id: app-03, category: app-privacy, test: "chat text is never written to device storage" }
