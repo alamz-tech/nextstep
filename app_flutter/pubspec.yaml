@@ -1,0 +1,30 @@
+name: nextstep
+description: "NextStep – private HIV-prevention companion for young women (prototype). MIT licence."
+publish_to: 'none'
+version: 0.2.0+2
+
+environment:
+  sdk: ^3.8.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/content/
+  fonts:
+    - family: Atkinson
+      fonts:
+        - asset: assets/fonts/AtkinsonHyperlegible-Regular.ttf
+        - asset: assets/fonts/AtkinsonHyperlegible-Bold.ttf
+          weight: 700
+    - family: Bricolage
+      fonts:
+        - asset: assets/fonts/BricolageGrotesque-Variable.ttf
