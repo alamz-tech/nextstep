@@ -13,10 +13,10 @@ Code: MIT (`LICENSE`). Content: CC BY 4.0 (`content/LICENSE`). Fonts: SIL OFL 1.
 
 | Part | Who uses it | Where |
 |---|---|---|
-| Learner app (Android + web) | young women 15–24, anonymous | `app_flutter/` (served at `/app/`) |
-| Student question box | students in a session, via QR code, no install/login | `/app/#/join/<code>` |
-| Facilitator mode | teachers, outreach NGOs, CHWs (accounts by org admin) | same app → Settings → sign-in |
-| Partner clinic mode | clinic staff confirm referral codes | `/app/#/clinic` |
+| Learner app (Android + web): a single chat screen built to the design's WhatsApp-style chat frame | young women 15–24, anonymous | `app_flutter/` (served at `/app/`) |
+| Student question box (same chat look) | students in a session, via QR code, no install/login | `/app/#/join/<code>` |
+| Facilitator screens | teachers, outreach NGOs, CHWs (accounts by org admin) | `/app/#/staff` |
+| Partner clinic screen | clinic staff confirm referral codes | `/app/#/staff` → clinic |
 | Impact dashboard | platform / org admins, aggregate only | `/dashboard` |
 | API | everything above | `/v1/*` (FastAPI) |
 
@@ -25,7 +25,7 @@ Code: MIT (`LICENSE`). Content: CC BY 4.0 (`content/LICENSE`). Fonts: SIL OFL 1.
 ```mermaid
 flowchart LR
   subgraph Device["Learner phone / browser (Flutter)"]
-    UI[Screens] --> SS[(Encrypted storage:<br/>prefs, PIN hash, referral codes,<br/>content bundle)]
+    UI[Chat screen<br/>design chat frame] --> SS[(Encrypted storage:<br/>install ID, language,<br/>check-in due date)]
     UI --> LN[Local notifications<br/>day 3 / day 7]
   end
   subgraph Student["Student browser (QR)"]
@@ -38,7 +38,8 @@ flowchart LR
   JB --> API
   FA -- "Bearer token + role" --> API
   subgraph Server["FastAPI /v1"]
-    API[Routers + rate limits] --> SAFE[Safety layer:<br/>crisis keywords + LLM classifier,<br/>dose/diagnosis/injection guards]
+    API[Routers + rate limits] --> ENG[Conversation engine<br/>design flows: consent, age, menu,<br/>Q&A, private check, referral, follow-up]
+    ENG --> SAFE[Safety layer:<br/>crisis keywords + LLM classifier,<br/>dose/diagnosis/injection guards]
     SAFE --> RET[BM25 retrieval over<br/>content/kb chunks]
     RET --> GEN[Optional LLM composer<br/>answers only from chunks<br/>+ post-generation check]
     API --> VOICE[STT / TTS adapters<br/>quality-gated per language]
@@ -49,8 +50,9 @@ flowchart LR
   REPO --> DASH[Dashboard: counts only, <5 suppressed]
 ```
 
-The original WhatsApp channel and chat simulator are still in the code (`app/channels/`, engine in
-`app/engine/engine.py`) but **off by default** (`FEATURE_WHATSAPP=false`, `SIM_ENABLED=false`). Meta's WhatsApp
+The app's chat (`/v1/chat`) and the WhatsApp channel share one conversation engine (`app/engine/engine.py`)
+that implements the design's flows and copy. The WhatsApp channel and the original web simulator are **off by
+default** (`FEATURE_WHATSAPP=false`, `SIM_ENABLED=false`). Meta's WhatsApp
 Business policy bans general-purpose AI chatbots, so if ever enabled it must stay a structured service.
 
 ## Run it

@@ -7,19 +7,17 @@ no accounts for learners, no message text kept.
 
 | Data | Where | How long | Notes |
 |---|---|---|---|
-| Random install ID (UUID) | device, encrypted | until "delete my data" or uninstall | Sent as `X-Install-ID`; the server stores only an HMAC of it, and only next to referral codes. |
-| Preferences, PIN hash (salted SHA-256), language, age tier | device, encrypted | until deleted | Age tier is a band, never a date of birth. |
-| Saved referral codes, reminder settings, outcomes | device, encrypted | until deleted | |
-| Content bundle (copy, KB, services, kits) | device, encrypted | refreshed when online | Public content, encrypted anyway so the topic isn't visible on the device. |
-| Questions asked and answers | device memory only | until you leave the Ask screen | Kept on the device only if you turn on "Keep my questions" (off by default). **Never stored on the server.** |
-| Voice notes | memory/temp file only | seconds | Uploaded once for transcription, then deleted on device and server. TTS audio is held in server memory for 10 minutes under an unguessable URL. |
-| Private-check answers | device memory only | until the result shows | Server receives answers to score when online, does not store them, logs only the result band. |
-| Referral code | server: code, service id, state, age band, language, setting, HMAC(install ID) | 90 days (`REFERRAL_TTL_DAYS`) | Clinics see only "confirmed / not found / expired". |
-| Usage counts | server `events` table | 365 days (`EVENTS_RETENTION_DAYS`) | Columns: day, event, category dimensions. No IDs, no text, no time finer than a day. |
+| Random install ID (UUID) | device, encrypted | until STOP/DELETE or uninstall | Sent as `X-Install-ID`; the server stores only an HMAC of it. |
+| Language, next check-in date | device, encrypted | until STOP/DELETE | |
+| Chat messages | device memory only | until the app closes or quick exit | Never written to device storage. **Never stored on the server.** |
+| Conversation state (step, language, age band, private-check running score) | server, keyed by HMAC(install ID) | 24 hours (`SESSION_TTL_HOURS`) | No message text. Check answers are not kept; only the running score until the result shows. |
+| Voice notes | memory/temp file only | seconds | Uploaded once for transcription, then deleted. |
+| Referral code | server: code, service id, state, age band, language, HMAC(install ID) | 90 days (`REFERRAL_TTL_DAYS`) | Shown on the service card. Clinics see only "confirmed / not found / expired". |
+| Usage counts | server `events` table | 365 days (`EVENTS_RETENTION_DAYS`) | Day, event, category dimensions. No IDs, no text. |
 
-**Delete my data:** wipes everything on the device, cancels reminders and calls `DELETE /v1/learner/data`, which removes
-that install's referral codes. If offline, the device keeps only the old random ID until the server delete succeeds.
-Aggregate counts already recorded cannot be traced to anyone and are not removed.
+**STOP / DELETE** (typed at any time, as in the design) erase the server conversation state and the install's
+referral codes, cancel reminders and wipe the device storage. Aggregate counts already recorded cannot be traced
+to anyone and are not removed.
 
 **Notifications** are scheduled on the device. Text: "Hi, it's NextStep. Just checking in." Hidden on the lock screen.
 
