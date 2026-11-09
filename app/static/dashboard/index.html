@@ -67,14 +67,36 @@ h2 { margin: 0; font-family: var(--ns-font-display); font-size: 22px; line-heigh
   </div>
 </div></header>
 <main>
+  <section class="panel" id="login" hidden style="max-width:420px">
+    <h2>Sign in</h2>
+    <span class="muted">Platform or organisation admins only.</span>
+    <label>Username <input id="u" autocomplete="username" style="width:100%;min-height:44px;font:16px var(--ns-font-body)"></label>
+    <label>Password <input id="p" type="password" autocomplete="current-password" style="width:100%;min-height:44px;font:16px var(--ns-font-body)"></label>
+    <button type="button" id="go" style="min-height:44px;border-radius:999px;border:none;background:var(--ns-color-primary);color:var(--ns-color-on-primary);font-weight:700">Sign in</button>
+    <span id="err" class="muted" style="color:var(--ns-color-accent)"></span>
+  </section>
+  <div id="app" hidden style="display:contents">
   <div class="filters">
     <div class="ranges" role="group" aria-label="Date range" id="ranges"></div>
+    <div class="ranges" role="group" aria-label="Filters">
+      <select id="f-tier" aria-label="Age tier" style="min-height:44px"><option value="">All ages</option><option value="15_17">15–17</option><option value="18_24">18–24</option></select>
+      <select id="f-lang" aria-label="Language" style="min-height:44px"><option value="">All languages</option><option value="en">English</option><option value="pcm">Pidgin</option></select>
+      <select id="f-setting" aria-label="Setting" style="min-height:44px"><option value="">All settings</option><option value="school">School</option><option value="community">Community</option><option value="clinic">Clinic</option></select>
+      <select id="f-state" aria-label="State" style="min-height:44px"><option value="">All states</option><option value="lagos">Lagos</option></select>
+    </div>
     <span class="rtext"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2z M4 10h16 M9 3v4 M15 3v4"/></svg><span id="rtext"></span></span>
   </div>
   <div class="kpis" id="kpis" aria-live="polite"></div>
   <section class="panel">
-    <div class="fhead"><h2>From "I might be at risk" to a visit</h2><span class="muted">Percent shows conversion from the step before</span></div>
+    <div class="fhead"><h2>From "I might be at risk" to a confirmed visit</h2><span class="muted">Percent shows conversion from the step before</span></div>
     <div id="funnel" style="display:flex;flex-direction:column;gap:14px"></div>
+    <span class="muted">Visits self-reported by learners (separate from clinic confirmations): <strong id="selfrep"></strong> (<span id="selfconv"></span> of referrals)</span>
+  </section>
+  <section class="panel">
+    <h2>Facilitator sessions</h2>
+    <div class="kpis" id="fac"></div>
+    <h3 style="margin:8px 0 0">Top question themes</h3>
+    <ol id="themes" class="muted" style="margin:0"></ol>
   </section>
   <div class="grid3">
     <section class="panel"><h2>Conversations by age tier</h2><div id="ages" style="display:flex;flex-direction:column;gap:14px"></div><span class="muted">Under-15 users are shown a helpline and exit; only the count is kept.</span></section>
@@ -87,44 +109,75 @@ h2 { margin: 0; font-family: var(--ns-font-display); font-size: 22px; line-heigh
     <strong>Privacy rules for this dashboard</strong>
     <span>No names, phone numbers, WhatsApp IDs or message content: events are counted at source and the raw chat is never stored.</span>
     <span>Any count below 5 shows as "&lt;5" to prevent identifying individuals.</span>
-    <span>Daily granularity at most. Visits are self-reported in the follow-up check-in.</span>
+    <span>Daily granularity at most. Clinic-confirmed visits come from referral codes; self-reported visits are shown separately.</span>
   </section>
+  </div>
 </main>
 <script>
 (() => {
   const RANGES = [['7', 'Last 7 days'], ['30', 'Last 30 days'], ['90', 'Last 90 days'], ['all', 'Since pilot start']];
   let cur = '30';
+  let token = null;
+  try { token = sessionStorage.getItem('ns-dash'); } catch (e) {}
+  const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const COL = ['var(--ns-color-primary)', '#2D8A84', 'var(--ns-color-text-2)'];
+  function show(app) { $('login').hidden = app; $('app').hidden = !app; $('app').style.display = app ? 'contents' : 'none'; }
+  async function login() {
+    $('err').textContent = '';
+    const r = await fetch('/v1/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: $('u').value, password: $('p').value }) });
+    if (!r.ok) { $('err').textContent = 'Wrong username or password.'; return; }
+    const d = await r.json();
+    if (!['platform_admin', 'org_admin'].includes(d.role)) { $('err').textContent = 'This account cannot view the dashboard.'; return; }
+    token = d.token; try { sessionStorage.setItem('ns-dash', token); } catch (e) {}
+    load();
+  }
   function ranges() {
-    const box = document.getElementById('ranges'); box.textContent = '';
+    const box = $('ranges'); box.textContent = '';
     for (const [k, l] of RANGES) { const b = el('button', null, l); b.type = 'button'; b.setAttribute('aria-pressed', String(k === cur)); b.onclick = () => { cur = k; load(); }; box.appendChild(b); }
   }
   function bars(id, items, colors) {
-    const box = document.getElementById(id); box.textContent = '';
+    const box = $(id); box.textContent = '';
     items.forEach((a, i) => {
       const r = el('div', 'brow'); const top = el('div', 'top'); top.appendChild(el('strong', null, a.label)); top.appendChild(el('span', null, a.v + ' · ' + a.share)); r.appendChild(top);
       const tr = el('div', 'btrack'); const f = el('div', 'bfill'); f.style.width = a.pct + '%'; f.style.background = colors[i % colors.length]; tr.appendChild(f); r.appendChild(tr); box.appendChild(r);
     });
   }
   async function load() {
+    if (!token) { show(false); return; }
     ranges();
-    const d = await (await fetch('/dashboard/api/summary?range=' + cur)).json();
-    document.getElementById('sample').hidden = !d.sample;
-    document.getElementById('rtext').textContent = d.range_text;
-    const k = document.getElementById('kpis'); k.textContent = '';
+    const q = new URLSearchParams({ range: cur, tier: $('f-tier').value, lang: $('f-lang').value, setting: $('f-setting').value, state: $('f-state').value });
+    const r = await fetch('/v1/dashboard/summary?' + q, { headers: { Authorization: 'Bearer ' + token } });
+    if (r.status === 401 || r.status === 403) { token = null; try { sessionStorage.removeItem('ns-dash'); } catch (e) {} show(false); return; }
+    const d = await r.json();
+    show(true);
+    $('sample').hidden = !d.sample;
+    $('rtext').textContent = d.range_text;
+    const k = $('kpis'); k.textContent = '';
     for (const x of d.kpis) { const p = el('div', 'panel kpi ' + (x.tone || '')); p.appendChild(el('span', 'l', x.label)); p.appendChild(el('span', 'v', x.v)); p.appendChild(el('span', 'n', x.note)); k.appendChild(p); }
-    const f = document.getElementById('funnel'); f.textContent = '';
+    const f = $('funnel'); f.textContent = '';
     for (const x of d.funnel) {
-      const r = el('div', 'frow'); r.appendChild(el('span', 'fl', x.label));
-      const tr = el('div', 'track'); const fill = el('div', 'fill ' + (x.tone || ''), x.v); fill.style.width = Math.max(x.pct, 0) + '%'; tr.appendChild(fill); r.appendChild(tr);
-      r.appendChild(el('span', 'fc', x.conv)); f.appendChild(r);
+      const row = el('div', 'frow'); row.appendChild(el('span', 'fl', x.label));
+      const tr = el('div', 'track'); const fill = el('div', 'fill ' + (x.tone || ''), x.v); fill.style.width = Math.max(x.pct, 0) + '%'; tr.appendChild(fill); row.appendChild(tr);
+      row.appendChild(el('span', 'fc', x.conv)); f.appendChild(row);
     }
+    $('selfrep').textContent = d.self_reported.v; $('selfconv').textContent = d.self_reported.conv;
+    const fa = $('fac'); fa.textContent = '';
+    for (const [label, v] of [['Sessions', d.facilitator.sessions], ['Approximate reach', d.facilitator.reach], ['Anonymous joins', d.facilitator.joins],
+      ['Questions', d.facilitator.questions], ['Crisis flags (count only)', d.facilitator.flags], ['Filtered', d.facilitator.filtered]]) {
+      const p = el('div', 'panel kpi'); p.appendChild(el('span', 'l', label)); p.appendChild(el('span', 'v', v)); fa.appendChild(p);
+    }
+    const th = $('themes'); th.textContent = '';
+    if (!d.facilitator.top_themes.length) th.appendChild(el('li', null, 'Themes with fewer than 5 questions are hidden.'));
+    for (const t of d.facilitator.top_themes) th.appendChild(el('li', null, `${t.label} · ${t.v}`));
     bars('ages', d.ages, COL);
-    bars('langs', d.langs, ['var(--ns-color-primary)', 'var(--ns-color-accent)']);
-    document.getElementById('voice').textContent = d.voice_share;
-    document.getElementById('crisis').textContent = d.crisis;
+    bars('langs', d.langs, ['var(--ns-color-primary)', 'var(--ns-color-accent)', '#2D8A84']);
+    $('voice').textContent = d.voice_share;
+    $('crisis').textContent = d.crisis;
   }
+  $('go').onclick = login;
+  $('p').addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+  for (const id of ['f-tier', 'f-lang', 'f-setting', 'f-state']) $(id).onchange = load;
   load();
 })();
 </script>

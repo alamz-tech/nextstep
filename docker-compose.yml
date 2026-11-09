@@ -1,0 +1,29 @@
+services:
+  api:
+    build: .
+    ports: ["8077:8077"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: sqlite:////srv/data/nextstep.db
+      DEMO_MODE: ${DEMO_MODE:-true}
+      DEMO_STATE: ${DEMO_STATE:-Lagos}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8077}
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      FEATURE_WHATSAPP: "false"
+    volumes:
+      - nextstep-data:/srv/data
+    restart: unless-stopped
+
+  # Optional: a self-hosted open model for the OpenAI-compatible adapter.
+  # docker compose --profile openmodel up   then set LLM_PROVIDER=openai_compat,
+  # OPENAI_COMPAT_BASE_URL=http://ollama:11434/v1 and OPENAI_COMPAT_MODEL=<pulled model>.
+  ollama:
+    image: ollama/ollama:0.5.4
+    profiles: ["openmodel"]
+    volumes: ["ollama:/root/.ollama"]
+
+volumes:
+  nextstep-data:
+  ollama:

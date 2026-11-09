@@ -1,0 +1,11 @@
+.venv
+.git
+**/__pycache__
+.pytest_cache
+data/*.db*
+sources/*.pdf
+app_flutter/.dart_tool
+app_flutter/build/app
+app_flutter/android/.gradle
+app_flutter/ios
+.env
