@@ -1,4 +1,3 @@
-import 'package:cross_file/cross_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
@@ -32,8 +31,7 @@ class VoiceRecorder {
     try {
       _path = await _rec.stop();
       if (_path == null) return null;
-      final f = XFile(_path!);
-      final bytes = await f.readAsBytes();
+      final bytes = await readRecording(_path!);
       await _deleteTemp();
       return (bytes, kIsWeb ? 'question.webm' : 'question.m4a');
     } catch (_) {

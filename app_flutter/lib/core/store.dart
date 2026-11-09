@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// device goes through here, so "delete my data" is a single call.
 class Store {
   static const _s = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    aOptions: AndroidOptions(), // AES-GCM, key in Android Keystore
     webOptions: WebOptions(dbName: 'ns', publicKey: 'ns'),
   );
 
