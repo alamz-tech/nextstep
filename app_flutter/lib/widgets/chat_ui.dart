@@ -9,11 +9,13 @@ class W {
   static const headerLine = Color(0xFFE3E0DA);
   static const ink = Color(0xFF111B21);
   static const sub = Color(0xFF54656F);
-  static const user = Color(0xFFD9FDD3);
+  static const user = Color(0xFFFBE4EC); // blush: learner's own bubbles
   static const bot = Color(0xFFFFFFFF);
   static const btnLine = Color(0xFFE9EDEF);
-  static const link = Color(0xFF027EB5);
-  static const teal = Color(0xFF0F5C5A);
+  static const link = Color(0xFFA3305A); // berry: reply buttons
+  static const teal = Color(0xFF0F5C5A); // kept for the service card
+  static const berry = Color(0xFFA3305A); // logo, mic/send, accents
+  static const berryDeep = Color(0xFF6E1F3D);
   static const yellow = Color(0xFFF6C453);
   static const blue = Color(0xFF2F5DA8);
   static const pillYellow = Color(0xFFFFF5C4);
@@ -29,7 +31,7 @@ class Avatar extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         width: size,
         height: size,
-        decoration: const BoxDecoration(color: W.teal, shape: BoxShape.circle),
+        decoration: const BoxDecoration(color: W.berry, shape: BoxShape.circle),
         child: CustomPaint(painter: StepsMark(stroke: Colors.white, dot: W.yellow, scale: 26 / 38)),
       );
 }
@@ -184,10 +186,10 @@ class BotVoiceBubble extends StatelessWidget {
               borderRadius: BorderRadius.only(topLeft: Radius.circular(2), topRight: Radius.circular(10), bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10))),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(children: [
-              Container(width: 36, height: 36, decoration: const BoxDecoration(color: W.teal, shape: BoxShape.circle),
+              Container(width: 36, height: 36, decoration: const BoxDecoration(color: W.berry, shape: BoxShape.circle),
                   child: const Icon(Icons.mic_none, color: Colors.white, size: 18)),
               IconButton(onPressed: onPlay, icon: const Icon(Icons.play_arrow, color: W.sub), tooltip: label),
-              const Expanded(child: ClipRect(child: Waveform(n: 24, seed: 2.3, color: W.teal))),
+              const Expanded(child: ClipRect(child: Waveform(n: 24, seed: 2.3, color: W.berry))),
             ]),
             Align(alignment: Alignment.centerRight, child: Text(label, style: const TextStyle(fontSize: 12, color: W.sub))),
           ]),
@@ -260,7 +262,7 @@ class BotBubble extends StatelessWidget {
                     if (kicker != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),
-                        child: Text(kicker!, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: W.teal, letterSpacing: 0.3)),
+                        child: Text(kicker!, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: W.berry, letterSpacing: 0.3)),
                       ),
                     if (text.isNotEmpty) Text(text, style: const TextStyle(fontSize: 15.5, height: 21 / 15.5, color: W.ink)),
                   ]),
@@ -294,7 +296,7 @@ class ServiceCardTop extends StatelessWidget {
         decoration: BoxDecoration(color: W.teal, borderRadius: BorderRadius.circular(8)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            SizedBox(width: 34, height: 34, child: CustomPaint(painter: StepsMark(stroke: W.teal, dot: const Color(0xFFC2462E), tile: Colors.white))),
+            SizedBox(width: 34, height: 34, child: CustomPaint(painter: StepsMark(stroke: W.berry, dot: W.yellow, tile: Colors.white))),
             const Spacer(),
             if (free != null) Tag(free!, bg: W.yellow, fg: const Color(0xFF1B1F23)),
             const SizedBox(width: 6),

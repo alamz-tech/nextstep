@@ -129,7 +129,7 @@ class _JoinScreenState extends State<JoinScreen> {
                       child: Container(
                         width: 46,
                         height: 46,
-                        decoration: BoxDecoration(color: hasText ? W.teal : W.teal.withValues(alpha: 0.5), shape: BoxShape.circle),
+                        decoration: BoxDecoration(color: hasText ? W.berry : W.berry.withValues(alpha: 0.5), shape: BoxShape.circle),
                         child: Semantics(label: s.t(['app', 'join_send']), child: const Icon(Icons.send, color: Colors.white, size: 20)),
                       ),
                     ),

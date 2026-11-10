@@ -68,6 +68,9 @@ def create_app(settings=None, repo=None) -> FastAPI:
         resp.headers.setdefault("Referrer-Policy", "no-referrer")
         if request.url.path.startswith("/v1/"):
             resp.headers.setdefault("Cache-Control", "no-store")
+        elif request.url.path.startswith("/app/"):
+            # Revalidate every time so a new web build reaches users immediately (ETag keeps it cheap).
+            resp.headers.setdefault("Cache-Control", "no-cache")
         return resp
 
     app.mount("/static", StaticFiles(directory=ROOT / "app" / "static"), name="static")

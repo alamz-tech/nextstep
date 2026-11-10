@@ -21,6 +21,8 @@
   --ns-color-success: #2E7D4F;
   --ns-color-user-bubble: #DCEFEC;
   --ns-color-bot-bubble: #FFFFFF;
+  --ns-color-berry: #A3305A;
+  --ns-color-berry-tint: #FBE4EC;
   --ns-space-1: 4px;
   --ns-space-2: 8px;
   --ns-space-3: 12px;
@@ -64,6 +66,8 @@
   --ns-color-success: #6CC79A;
   --ns-color-user-bubble: #1F3B3A;
   --ns-color-bot-bubble: #1F2D31;
+  --ns-color-berry: #E58AAE;
+  --ns-color-berry-tint: #4B1528;
   --ns-color-accent-soft: #F59A82;
   --ns-color-support-tint: #E3EAF6;
     color-scheme: dark;
@@ -88,6 +92,8 @@
   --ns-color-success: #6CC79A;
   --ns-color-user-bubble: #1F3B3A;
   --ns-color-bot-bubble: #1F2D31;
+  --ns-color-berry: #E58AAE;
+  --ns-color-berry-tint: #4B1528;
   --ns-color-accent-soft: #F59A82;
   --ns-color-support-tint: #E3EAF6;
   color-scheme: dark;

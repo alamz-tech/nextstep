@@ -30,7 +30,7 @@ Scaffold _page(BuildContext context, String title, List<Widget> children, {Widge
       surfaceTintColor: Colors.white,
       shape: const Border(bottom: BorderSide(color: _line)),
       title: Row(children: [
-        SizedBox(width: 36, height: 36, child: CustomPaint(painter: StepsMark(stroke: Colors.white, dot: W.yellow, tile: W.teal))),
+        SizedBox(width: 36, height: 36, child: CustomPaint(painter: StepsMark(stroke: Colors.white, dot: W.yellow, tile: W.berry))),
         const SizedBox(width: 10),
         Flexible(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w800))),
       ]),
@@ -39,7 +39,7 @@ Scaffold _page(BuildContext context, String title, List<Widget> children, {Widge
           TextButton(onPressed: () {
             s.signOutStaff();
             context.go('/staff');
-          }, child: Text('Sign out ${s.staff!.username}')),
+          }, child: const Text('Sign out')),
       ],
     ),
     body: Align(
@@ -133,12 +133,12 @@ class _SessionsScreenState extends State<SessionsScreen> {
         builder: (ctx, set) => AlertDialog(
           title: const Text('New session'),
           content: Column(mainAxisSize: MainAxisSize.min, children: [
-            DropdownButtonFormField(value: setting, decoration: const InputDecoration(labelText: 'Setting'), items: const [
+            DropdownButtonFormField(initialValue: setting, decoration: const InputDecoration(labelText: 'Setting'), items: const [
               DropdownMenuItem(value: 'school', child: Text('School')),
               DropdownMenuItem(value: 'community', child: Text('Community')),
               DropdownMenuItem(value: 'clinic', child: Text('Clinic')),
             ], onChanged: (v) => set(() => setting = v!)),
-            DropdownButtonFormField(value: band, decoration: const InputDecoration(labelText: 'Audience age'), items: const [
+            DropdownButtonFormField(initialValue: band, decoration: const InputDecoration(labelText: 'Audience age'), items: const [
               DropdownMenuItem(value: '15_17', child: Text('15–17')),
               DropdownMenuItem(value: '18_24', child: Text('18–24')),
             ], onChanged: (v) => set(() => band = v!)),

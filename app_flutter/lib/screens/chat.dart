@@ -143,7 +143,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   duration: const Duration(milliseconds: 120),
                   width: recording ? 56 : 46,
                   height: recording ? 56 : 46,
-                  decoration: BoxDecoration(color: recording ? const Color(0xFFC2462E) : W.teal, shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: recording ? W.berryDeep : W.berry, shape: BoxShape.circle),
                   child: Icon(hasText ? Icons.send : Icons.mic_none, color: Colors.white, size: 20),
                 ),
               ),
