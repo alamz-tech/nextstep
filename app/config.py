@@ -54,6 +54,8 @@ class Settings:
     openai_base_url: str = field(default_factory=lambda: _str("OPENAI_COMPAT_BASE_URL", "http://localhost:11434/v1"))
     openai_model: str = field(default_factory=lambda: _str("OPENAI_COMPAT_MODEL", ""))
     openai_api_key: str = field(default_factory=lambda: _str("OPENAI_COMPAT_API_KEY", ""))
+    # Reasoning models (e.g. gpt-oss on Groq): "low" uses far fewer tokens per call. Empty = not sent.
+    openai_reasoning_effort: str = field(default_factory=lambda: _str("OPENAI_COMPAT_REASONING_EFFORT", ""))
     llm_timeout_s: float = field(default_factory=lambda: float(_str("LLM_TIMEOUT_S", "20")))
     # When false, Q&A always returns the approved chunk text verbatim (safest).
     llm_compose_answers: bool = field(default_factory=lambda: _bool("LLM_COMPOSE_ANSWERS", True))

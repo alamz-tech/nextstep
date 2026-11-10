@@ -34,6 +34,8 @@ class OpenAICompatLLM:
             "temperature": 0,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
         }
+        if self.s.openai_reasoning_effort:
+            body["reasoning_effort"] = self.s.openai_reasoning_effort
         if json_schema:
             body["response_format"] = {"type": "json_schema", "json_schema": {"name": "out", "schema": json_schema}}
         try:
@@ -44,5 +46,6 @@ class OpenAICompatLLM:
             r.raise_for_status()
             return r.json()["choices"][0]["message"]["content"]
         except (httpx.HTTPError, KeyError, IndexError, ValueError) as e:
-            log.warning("openai_compat error %s; using deterministic fallback", type(e).__name__)
+            status = getattr(getattr(e, "response", None), "status_code", "")
+            log.warning("openai_compat error %s %s; using deterministic fallback", type(e).__name__, status)
             return None
