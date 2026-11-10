@@ -53,7 +53,21 @@
       "join_closed": "This session has ended.",
       "join_another": "Ask another question",
       "fac_support_reminder": "Some questions suggest someone may need support. Remind the whole group, without singling anyone out, that free and confidential help is available: [VERIFIED HELPLINE 1].",
-      "offline": "You're offline. NextStep needs a connection. Please try again when you're back online."
+      "offline": "You're offline. NextStep needs a connection. Please try again when you're back online.",
+      "hold_to_record": "Hold to record, release to send",
+      "unlock_title": "Enter your PIN",
+      "code_title": "Your referral code",
+      "code_how": "Show this code at the service. It has no name or details on it.",
+      "back_home": "Back to home",
+      "get_code": "Get referral code",
+      "settings_title": "Settings",
+      "language": "Language",
+      "pin_lock": "PIN lock",
+      "low_data": "Low-data mode",
+      "delete": "Delete my data",
+      "staff_signin": "Staff sign in",
+      "crisis_title": "You are not alone",
+      "call": "Call"
     },
     "pcm": {
       "not_medical_advice": "This na general information, e no be medical advice. Health worker fit help you with your own matter.",
@@ -66,7 +80,21 @@
       "join_closed": "This session don end.",
       "join_another": "Ask another question",
       "fac_support_reminder": "Some questions show say person fit need support. Remind everybody, without pointing anybody, say free and private help dey: [VERIFIED HELPLINE 1].",
-      "offline": "Network no dey. NextStep need network. Abeg try again when network don come back."
+      "offline": "Network no dey. NextStep need network. Abeg try again when network don come back.",
+      "hold_to_record": "Hold am to record, leave am to send",
+      "unlock_title": "Type your PIN",
+      "code_title": "Your referral code",
+      "code_how": "Show this code for the service. Your name or details no dey inside.",
+      "back_home": "Go back home",
+      "get_code": "Get referral code",
+      "settings_title": "Settings",
+      "language": "Language",
+      "pin_lock": "PIN lock",
+      "low_data": "Low-data mode",
+      "delete": "Delete my data",
+      "staff_signin": "Staff sign in",
+      "crisis_title": "You no dey alone",
+      "call": "Call"
     }
   }
 }

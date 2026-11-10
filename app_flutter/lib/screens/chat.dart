@@ -136,7 +136,16 @@ class _ChatScreenState extends State<ChatScreen> {
               label: hasText ? s.t(['sim', 'send']) : s.t(['sim', 'voice']),
               child: GestureDetector(
                 key: const Key('chat-send'),
-                onTap: () => hasText ? _send(s) : (demo ? s.sendDemoVoice() : null),
+                onTap: () {
+                  if (hasText) {
+                    _send(s);
+                  } else {
+                    // Tapping the mic never sends anything: hold to record, release to send.
+                    ScaffoldMessenger.of(context)
+                      ..clearSnackBars()
+                      ..showSnackBar(SnackBar(content: Text(s.t(['app', 'hold_to_record'])), duration: const Duration(seconds: 2)));
+                  }
+                },
                 onLongPressStart: hasText ? null : (_) => _startRec(),
                 onLongPressEnd: hasText ? null : (_) => _stopRec(s),
                 child: AnimatedContainer(

@@ -9,6 +9,7 @@ import 'screens/chat.dart';
 import 'screens/join.dart';
 import 'screens/lock.dart';
 import 'screens/staff/staff.dart';
+import 'ui/preview.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +48,9 @@ class _NextStepAppState extends State<NextStepApp> {
         GoRoute(path: '/staff/session/:id', builder: (_, st) => SessionScreen(id: st.pathParameters['id']!)),
         GoRoute(path: '/staff/projector/:id', builder: (_, st) => ProjectorScreen(id: st.pathParameters['id']!)),
         GoRoute(path: '/clinic', builder: (_, __) => const ClinicScreen()),
+        // Step 1: static screens for design approval (removed after wiring).
+        GoRoute(path: '/preview', builder: (_, __) => const PreviewIndex()),
+        GoRoute(path: '/preview/:name', builder: (_, st) => PreviewScreen(name: st.pathParameters['name']!)),
       ],
     );
   }
