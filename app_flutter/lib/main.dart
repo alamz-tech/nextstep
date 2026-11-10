@@ -61,7 +61,7 @@ class _NextStepAppState extends State<NextStepApp> {
     return MaterialApp.router(
       title: 'NextStep',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: const Color(0xFF0F5C5A), fontFamily: 'Atkinson'),
+      theme: ThemeData(useMaterial3: true, colorSchemeSeed: const Color(0xFFA3305A), fontFamily: 'Atkinson'),
       routerConfig: router,
       builder: (ctx, child) {
         if (!s.ready) return const Scaffold(backgroundColor: Color(0xFFEAE6DF));

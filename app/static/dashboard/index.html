@@ -29,7 +29,7 @@ input{min-height:44px;border-radius:12px;border:2px solid #E3DFD7;padding:0 12px
         </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-        <span style="display:inline-flex;align-items:center;gap:8px;background:#DCEFEC;color:#0F5C5A;font-weight:700;font-size:14px;padding:8px 14px;border-radius:999px">
+        <span style="display:inline-flex;align-items:center;gap:8px;background:#FBE4EC;color:#A3305A;font-weight:700;font-size:14px;padding:8px 14px;border-radius:999px">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11h10a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6a2 2 0 012-2z M8 11V8a4 4 0 018 0v3"/></svg>Anonymised aggregate data
         </span>
         <span id="sample" hidden style="background:#F6C453;color:#1B1F23;font-weight:700;font-size:14px;padding:8px 14px;border-radius:999px">Sample / test data</span>
@@ -42,8 +42,8 @@ input{min-height:44px;border-radius:12px;border:2px solid #E3DFD7;padding:0 12px
       <h2>Sign in</h2>
       <input id="u" aria-label="Username" placeholder="Username" autocomplete="username">
       <input id="p" aria-label="Password" placeholder="Password" type="password" autocomplete="current-password">
-      <button type="button" id="go" style="min-height:44px;border-radius:999px;border:none;background:#0F5C5A;color:#FFFFFF;font:700 15px 'Atkinson Hyperlegible',sans-serif">Sign in</button>
-      <span id="err" style="color:#C2462E;font-size:14px"></span>
+      <button type="button" id="go" style="min-height:44px;border-radius:999px;border:none;background:#A3305A;color:#FFFFFF;font:700 15px 'Atkinson Hyperlegible',sans-serif">Sign in</button>
+      <span id="err" style="color:#6E1F3D;font-size:14px"></span>
     </section>
 
     <div id="app" hidden style="display:flex;flex-direction:column;gap:24px">
@@ -73,15 +73,15 @@ input{min-height:44px;border-radius:12px;border:2px solid #E3DFD7;padding:0 12px
           <div id="langs" style="display:flex;flex-direction:column;gap:16px"></div>
           <span style="font-size:13px;color:#4A5560">Voice notes: <span id="voice"></span> of questions arrived as voice.</span>
         </section>
-        <section class="panel" style="border:2px solid #2F5DA8;gap:12px">
-          <h2 style="display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F5DA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 10c0 5.5-7 10-7 10z"/></svg>Crisis escalations</h2>
-          <span id="crisis" style="font-family:'Bricolage Grotesque',sans-serif;font-size:48px;font-weight:700;color:#2F5DA8;line-height:1"></span>
+        <section class="panel" style="border:2px solid #6E1F3D;gap:12px">
+          <h2 style="display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E1F3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 10c0 5.5-7 10-7 10z"/></svg>Crisis escalations</h2>
+          <span id="crisis" style="font-family:'Bricolage Grotesque',sans-serif;font-size:48px;font-weight:700;color:#6E1F3D;line-height:1"></span>
           <span style="font-size:15px">Times support contacts were shared after a disclosure.</span>
           <span style="font-size:13px;line-height:20px;color:#4A5560">Count only. No message text, IDs, types below 5 or exact times are ever stored or shown.</span>
         </section>
       </div>
 
-      <section style="background:#DCEFEC;border-radius:20px;padding:20px 24px;display:flex;flex-wrap:wrap;gap:12px 32px;font-size:14px;line-height:20px;color:#0A403F">
+      <section style="background:#FBE4EC;border-radius:20px;padding:20px 24px;display:flex;flex-wrap:wrap;gap:12px 32px;font-size:14px;line-height:20px;color:#6E1F3D">
         <strong style="flex:1 1 100%;font-size:16px">Privacy rules for this dashboard</strong>
         <span style="flex:1 1 260px">No names, phone numbers, WhatsApp IDs or message content: events are counted at source and the raw chat is never sent here.</span>
         <span style="flex:1 1 260px">Any count below 5 shows as "&lt;5" to prevent identifying individuals.</span>
@@ -131,7 +131,7 @@ input{min-height:44px;border-radius:12px;border:2px solid #E3DFD7;padding:0 12px
     const rb = $('ranges'); rb.textContent = '';
     for (const [k, l] of R) {
       const on = k === cur;
-      const b = el('button', `min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #0F5C5A;background:${on ? '#0F5C5A' : '#FFFFFF'};color:${on ? '#FFFFFF' : '#0F5C5A'};font:700 15px 'Atkinson Hyperlegible',sans-serif`, l);
+      const b = el('button', `min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #A3305A;background:${on ? '#A3305A' : '#FFFFFF'};color:${on ? '#FFFFFF' : '#A3305A'};font:700 15px 'Atkinson Hyperlegible',sans-serif`, l);
       b.type = 'button'; b.setAttribute('aria-pressed', String(on)); b.onclick = () => { cur = k; load(); }; rb.appendChild(b);
     }
     $('rtext').textContent = d.range_text;
@@ -153,8 +153,8 @@ input{min-height:44px;border-radius:12px;border:2px solid #E3DFD7;padding:0 12px
       row.appendChild(el('span', 'flex:0 0 140px;font-size:14px;color:#4A5560', x.conv));
       f.appendChild(row);
     }
-    bars('ages', d.ages, ['#0F5C5A', '#2D8A84', '#4A5560']);
-    bars('langs', d.langs, ['#0F5C5A', '#C2462E']);
+    bars('ages', d.ages, ['#A3305A', '#C65B82', '#4A5560']);
+    bars('langs', d.langs, ['#A3305A', '#6E1F3D']);
     $('voice').textContent = d.voice_share;
     $('crisis').textContent = d.crisis;
   }

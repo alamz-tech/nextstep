@@ -61,7 +61,7 @@ class PreviewScreen extends StatelessWidget {
       case 'under15':
         return Scaffold(
           appBar: nsBar(title: 'NextStep', brand: true),
-          body: NsBody(children: [Panel(border: W.blue, child: Text(t('age', 'under15'), style: bodyText))]),
+          body: NsBody(children: [Panel(border: W.berry, child: Text(t('age', 'under15'), style: bodyText))]),
         );
       case 'language':
         return Scaffold(
@@ -212,9 +212,9 @@ class PreviewScreen extends StatelessWidget {
                         const SizedBox(height: 8),
                         const Text('[DEMO] Youth Health Service A', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                         const SizedBox(height: 6),
-                        const Row(children: [Icon(Icons.place_outlined, size: 18, color: W.teal), SizedBox(width: 6), Text('[STREET ADDRESS], Yaba')]),
+                        const Row(children: [Icon(Icons.place_outlined, size: 18, color: W.berry), SizedBox(width: 6), Text('[STREET ADDRESS], Yaba')]),
                         const SizedBox(height: 6),
-                        const Row(children: [Icon(Icons.schedule, size: 18, color: W.teal), SizedBox(width: 6), Text('[DAYS], [HOURS]')]),
+                        const Row(children: [Icon(Icons.schedule, size: 18, color: W.berry), SizedBox(width: 6), Text('[DAYS], [HOURS]')]),
                         const SizedBox(height: 10),
                         Text(t('referral', 'expect_title'), style: const TextStyle(fontWeight: FontWeight.w700)),
                         Text(t('referral', 'expect')),
@@ -267,8 +267,8 @@ class PreviewScreen extends StatelessWidget {
         return Scaffold(
           appBar: nsBar(title: t('app', 'crisis_title'), onBack: back, actions: [exit]),
           body: NsBody(
-            bottom: PrimaryButton('${t('app', 'call')} [VERIFIED HELPLINE 1]', onPressed: nop, color: W.blue),
-            children: [Panel(border: W.blue, child: Text(t('crisis', 'violence'), style: bodyText))],
+            bottom: PrimaryButton('${t('app', 'call')} [VERIFIED HELPLINE 1]', onPressed: nop, color: W.berry),
+            children: [Panel(border: W.berry, child: Text(t('crisis', 'violence'), style: bodyText))],
           ),
         );
 

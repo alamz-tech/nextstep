@@ -61,7 +61,7 @@ class _NeutralScreenState extends State<NeutralScreen> {
           ),
         );
     return Theme(
-      data: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blueGrey),
+      data: ThemeData(useMaterial3: true, colorSchemeSeed: const Color(0xFFA3305A)),
       child: Scaffold(
         appBar: AppBar(title: const Text('Calculator')),
         body: SafeArea(

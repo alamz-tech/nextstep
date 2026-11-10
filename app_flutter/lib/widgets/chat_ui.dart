@@ -13,11 +13,9 @@ class W {
   static const bot = Color(0xFFFFFFFF);
   static const btnLine = Color(0xFFE9EDEF);
   static const link = Color(0xFFA3305A); // berry: reply buttons
-  static const teal = Color(0xFF0F5C5A); // kept for the service card
   static const berry = Color(0xFFA3305A); // logo, mic/send, accents
   static const berryDeep = Color(0xFF6E1F3D);
   static const yellow = Color(0xFFF6C453);
-  static const blue = Color(0xFF2F5DA8);
   static const pillYellow = Color(0xFFFFF5C4);
   static const pillYellowInk = Color(0xFF54470F);
   static const shadow = [BoxShadow(color: Color(0x21000000), offset: Offset(0, 1), blurRadius: 0.5)];
@@ -275,7 +273,7 @@ class BotBubble extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 4),
                 child: Wrap(spacing: 6, children: [
                   if (draft) Tag(draftLabel, bg: W.yellow, fg: const Color(0xFF1B1F23)),
-                  if (safety) Tag(safetyLabel, bg: W.blue, fg: Colors.white),
+                  if (safety) Tag(safetyLabel, bg: W.berryDeep, fg: Colors.white),
                 ]),
               ),
           ]),
@@ -293,14 +291,14 @@ class ServiceCardTop extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(4, 4, 4, 0),
         height: 140,
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: W.teal, borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(color: W.berry, borderRadius: BorderRadius.circular(8)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             SizedBox(width: 34, height: 34, child: CustomPaint(painter: StepsMark(stroke: W.berry, dot: W.berryDeep, tile: Colors.white))),
             const Spacer(),
             if (free != null) Tag(free!, bg: W.yellow, fg: const Color(0xFF1B1F23)),
             const SizedBox(width: 6),
-            if (youth != null) Tag(youth!, bg: Colors.white, fg: W.teal),
+            if (youth != null) Tag(youth!, bg: Colors.white, fg: W.berry),
           ]),
           Text(label, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white)),
         ]),

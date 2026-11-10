@@ -52,7 +52,7 @@ Scaffold _page(BuildContext context, String title, List<Widget> children, {Widge
   );
 }
 
-final _primary = FilledButton.styleFrom(backgroundColor: W.teal, minimumSize: const Size(48, 48), shape: const StadiumBorder());
+final _primary = FilledButton.styleFrom(backgroundColor: W.berry, minimumSize: const Size(48, 48), shape: const StadiumBorder());
 
 class StaffLoginScreen extends StatefulWidget {
   const StaffLoginScreen({super.key});
@@ -177,7 +177,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
             onTap: () => context.push('/staff/session/${x['id']}'),
           )),
         ),
-    ], fab: FloatingActionButton.extended(key: const Key('new-session'), backgroundColor: W.teal, foregroundColor: Colors.white,
+    ], fab: FloatingActionButton.extended(key: const Key('new-session'), backgroundColor: W.berry, foregroundColor: Colors.white,
         onPressed: () => _create(s), icon: const Icon(Icons.add), label: const Text('New session')));
   }
 }
@@ -230,7 +230,7 @@ class _SessionScreenState extends State<SessionScreen> {
         _panel(Column(children: [
           QrImageView(data: ses['join_url'], size: 200, backgroundColor: Colors.white),
           Text(ses['join_code'], key: const Key('join-code'),
-              style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, letterSpacing: 6, color: W.teal)),
+              style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, letterSpacing: 6, color: W.berry)),
           SelectableText(ses['join_url'], style: const TextStyle(fontSize: 12, color: _text2)),
         ])),
         SizedBox(
@@ -241,7 +241,7 @@ class _SessionScreenState extends State<SessionScreen> {
               Container(
                 margin: const EdgeInsets.only(top: 12),
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: W.blue, width: 2)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: W.berry, width: 2)),
                 child: Text('${data!['flagged_count']} flagged for support. ${data!['support_reminder']}', key: const Key('flag-reminder')),
               ),
             const SizedBox(height: 12),
@@ -281,7 +281,7 @@ class _SessionScreenState extends State<SessionScreen> {
           padding: const EdgeInsets.only(bottom: 10),
           child: _panel(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Expanded(child: Text('${t['label']} · ${t['count']}', style: const TextStyle(fontWeight: FontWeight.w700, color: W.teal))),
+              Expanded(child: Text('${t['label']} · ${t['count']}', style: const TextStyle(fontWeight: FontWeight.w700, color: W.berry))),
               Checkbox(
                 value: t['answered'] == true,
                 onChanged: (v) async {
@@ -338,13 +338,13 @@ class _ProjectorScreenState extends State<ProjectorScreen> {
     return Scaffold(
       backgroundColor: _bg,
       body: ListView(padding: const EdgeInsets.all(32), children: [
-        Text('Code ${data?['join_code'] ?? ''}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: W.teal)),
+        Text('Code ${data?['join_code'] ?? ''}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: W.berry)),
         const SizedBox(height: 20),
         for (final t in themes)
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: _panel(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(t['label'], style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: W.teal)),
+              Text(t['label'], style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w700, color: W.berry)),
               const SizedBox(height: 10),
               if (t['answer'] != null) Text(t['answer'], style: const TextStyle(fontSize: 24, height: 1.4)),
             ])),

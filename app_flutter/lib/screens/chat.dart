@@ -249,20 +249,20 @@ class _ChatScreenState extends State<ChatScreen> {
               Text(c['name'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
               const SizedBox(height: 6),
               Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Icon(Icons.place_outlined, size: 18, color: W.teal),
+                const Icon(Icons.place_outlined, size: 18, color: W.berry),
                 const SizedBox(width: 6),
                 Expanded(child: Text(c['address'])),
               ]),
               const SizedBox(height: 6),
               Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Icon(Icons.schedule, size: 18, color: W.teal),
+                const Icon(Icons.schedule, size: 18, color: W.berry),
                 const SizedBox(width: 6),
                 Expanded(child: Text(c['hours_raw'])),
               ]),
               if (c['code'] != null) ...[
                 const SizedBox(height: 6),
                 Row(children: [
-                  const Icon(Icons.confirmation_number_outlined, size: 18, color: W.teal),
+                  const Icon(Icons.confirmation_number_outlined, size: 18, color: W.berry),
                   const SizedBox(width: 6),
                   SelectableText(c['code'], key: const Key('referral-code'),
                       style: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 2, fontSize: 16)),
