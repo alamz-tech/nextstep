@@ -4,7 +4,7 @@ title: "STI basics"
 topic: sti
 lang: pcm
 age_tier: all
-source_document: "TODO – write from the WHO / Nigerian national guideline PDFs in /sources (use scripts/draft_kb_from_sources.py)"
+source_document: "TODO – not one of the six requested topics. NG-2020 p. 108 (PDF 130) section 7.8.3 covers STI prevention; write this chunk from it when needed."
 source_section: "TODO"
 review_status: "stub – empty"
 keywords: []

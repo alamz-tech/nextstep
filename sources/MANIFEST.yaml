@@ -1,8 +1,55 @@
-# One entry per PDF placed in /sources. Fill in when you add the files.
-documents: []
-#  - file: who-hiv-prevention-guidelines.pdf
-#    title: "[TITLE AS PUBLISHED]"
-#    publisher: World Health Organization
-#    year: "[YEAR]"
-#    url: "[WHERE YOU DOWNLOADED IT]"
-#    licence: "[e.g. CC BY-NC-SA 3.0 IGO]"
+# Guideline PDFs in /sources (the PDFs themselves are git-ignored).
+# `key` is the short name used in content/kb citations and content/check.yaml.
+# Page numbers in citations are written "printed page (PDF page)".
+# URLs are the addresses the files were downloaded from (read from the files' download metadata on 2026-11-11).
+#
+# Licence note: the three WHO documents are CC BY-NC-SA 3.0 IGO. NextStep content is CC BY 4.0, so it must
+# never copy or translate WHO passages. Each chunk restates the guidance in our own words and cites it.
+# Whether this kind of restatement counts as an "adaptation" under CC BY-NC-SA is a legal question that is
+# not yet answered: get advice before the content is approved.
+documents:
+  - key: WHO-PEP-2024
+    file: 9789240095137-eng.pdf
+    title: "Guidelines for HIV post-exposure prophylaxis"
+    publisher: World Health Organization
+    year: "2024"
+    isbn: "978-92-4-009513-7"
+    licence: "CC BY-NC-SA 3.0 IGO"
+    url: "https://iris.who.int/server/api/core/bitstreams/fc3c8ce2-35d8-4b39-93b1-cb4d060767f0/content"
+    pages: 28
+    sha256: 56493a3528ed762448a8961d3fa697bca1d909fb32da73704e91a15937ce46aa
+    page_offset: "printed = PDF - 8"
+  - key: WHO-HTS-2024
+    file: 9789240096394-eng.pdf
+    title: "Consolidated guidelines on differentiated HIV testing services"
+    publisher: World Health Organization
+    year: "2024"
+    isbn: "978-92-4-009639-4"
+    licence: "CC BY-NC-SA 3.0 IGO"
+    url: "https://iris.who.int/server/api/core/bitstreams/6b8ff887-1b61-4eea-a8ad-e14bc10bcc08/content"
+    pages: 192
+    sha256: 35b7887d4e328245ca08c84a7e58c6a38bf4d97df75f13b2f9a2c49a0a22cc48
+    page_offset: "printed = PDF - 26"
+  - key: WHO-CG-2021
+    file: Bookshelf_NBK572729.pdf
+    title: "Consolidated guidelines on HIV prevention, testing, treatment, service delivery and monitoring: recommendations for a public health approach"
+    publisher: World Health Organization
+    year: "2021"
+    isbn: "978-92-4-003159-3"
+    licence: "CC BY-NC-SA 3.0 IGO"
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK572729/pdf/Bookshelf_NBK572729.pdf"
+    pages: 594
+    sha256: 7018c0437bfedeadb5319d28373bd50d46acd7ed6d3a65b717a5fafd1583d444
+    page_offset: "printed = PDF - 44"
+  - key: NG-2020
+    file: Nigeria-Guidelines-for-HIV-Prevention-Treatment-and-Care.pdf
+    title: "National Guidelines for HIV Prevention, Treatment and Care"
+    publisher: "Federal Ministry of Health, Nigeria (National AIDS, STIs & Hepatitis Control Programme)"
+    year: "2020"
+    isbn: "978-978-980-273-9"
+    licence: "Not stated in the document (only 'Copyright 2020. Federal Ministry of Health'). Treat as all rights reserved: cite, never copy."
+    url: "https://www.prepwatch.org/wp-content/uploads/2022/06/Nigeria-Guidelines-for-HIV-Prevention-Treatment-and-Care.pdf"
+    url_note: "Third-party mirror (PrEPWatch). An official FMOH/NASCP download link has not been found yet."
+    pages: 235
+    sha256: 41f5d9c4b634dcce0b7ab1a93871163f4c39d266da70a7a94c019c0aa15c9f60
+    page_offset: "printed = PDF - 22"

@@ -29,7 +29,7 @@ def test_composed_answer_with_dose_is_blocked(container):
     drive(container, uid, "menu")
     res = container.process("sim", uid, Inbound("text", text="Can I get HIV from kissing?"))
     t = answer_text(container, res)
-    assert "tablet" not in t and "HIV is not passed on by kissing" in t
+    assert "tablet" not in t and "do not carry a real risk of HIV" in t
 
 
 def test_composed_answer_with_unretrieved_chunk_is_rejected(container):
@@ -75,4 +75,50 @@ def test_llm_failure_falls_back_safely(container):
     uid = "g-" + uuid.uuid4().hex
     drive(container, uid, "menu")
     res = container.process("sim", uid, Inbound("text", text="Can I get HIV from kissing?"))
-    assert "HIV is not passed on by kissing" in answer_text(container, res)
+    assert "do not carry a real risk of HIV" in answer_text(container, res)
+
+
+# ---------------- AI grouping of question-box questions ----------------
+from app.api.themes import regroup  # noqa: E402
+
+
+class GroupLLM:
+    name = "fake"
+
+    def __init__(self, out):
+        self.out, self.calls = out, []
+
+    def complete(self, system, user, max_tokens=800, json_schema=None):
+        self.calls.append(user)
+        return json.dumps(self.out) if self.out is not None else None
+
+
+QS = [{"id": 1, "text_redacted": "Can I get HIV from kissing?"},
+      {"id": 2, "text_redacted": "is it normal to feel sad after a breakup"},
+      {"id": 3, "text_redacted": "how do i stop thinking about my ex"},
+      {"id": 4, "text_redacted": "periods hurt a lot is that normal"}]
+
+
+def test_ai_groups_questions_bm25_cannot_place(container):
+    llm = GroupLLM({"groups": [
+        {"chunk_id": "", "label": "Breakups and feelings", "question_ids": [2, 3]},
+        {"chunk_id": "", "label": "Period pain, call 08031234567", "question_ids": [4]}]})
+    themes, assign = regroup(container.kb, QS, "en", None, llm=llm)
+    assert assign[1] == "kb:transmission-kissing"           # BM25 still decides grounded matches
+    assert "from kissing" not in llm.calls[0]                     # only the unplaced questions go to the LLM
+    assert assign[2] == assign[3] and assign[2].startswith("ai:")
+    labels = {k: l for k, l, _ in themes}
+    assert "no reviewed answer yet" in labels[assign[2]]
+    assert "0803" not in labels[assign[4]]                     # labels are redacted
+
+
+def test_ai_grouping_rejects_unknown_ids_and_falls_back(container):
+    llm = GroupLLM({"groups": [{"chunk_id": "", "label": "Feelings", "question_ids": [2, 99]}]})  # 3 and 4 missing
+    themes, assign = regroup(container.kb, QS, "en", None, llm=llm)
+    assert not any(k.startswith("ai:") for k in assign.values())
+    assert all(k.startswith(("kb:", "open:")) for k in assign.values())
+
+
+def test_ai_grouping_failure_uses_keywords(container):
+    themes, assign = regroup(container.kb, QS, "en", None, llm=GroupLLM(None))
+    assert assign[1] == "kb:transmission-kissing" and not any(k.startswith("ai:") for k in assign.values())

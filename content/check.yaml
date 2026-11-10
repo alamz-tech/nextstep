@@ -1,11 +1,15 @@
 # Private check: 6 questions. Wording lives in copy.json (check.q1…q6).
 #
 # STATUS: DRAFT. The questions and the scoring below are the PLACEHOLDER scoring
-# from the design handoff. They are NOT yet traced to a guideline. Before any real
+# from the design handoff. Each question is now linked to a risk the guidelines name, but the tool is not validated. Before any real
 # user sees this, the clinical team must:
-#   1. pick a validated AGYW HIV risk-screening tool from the sources in /sources,
-#   2. fill `source` for every question (document + page),
+#   1. pick a validated AGYW HIV risk-screening tool (none of the four documents in /sources
+#      contains one; NG-2020 p. 11 mentions a national Risk Stratification Tool but does not print it),
+#   2. check the `source` lines below: they show each question asks about a risk named in the
+#      guidelines; they do NOT validate the wording, the scoring or the threshold,
 #   3. replace `scoring` and record sign-off below.
+# WARNING: WHO-HTS-2024 p. xviii (PDF 20) says WHO does not recommend screening-OUT tools.
+#   result_low ("your chance looks lower") can work as a screening-out message. Review it.
 # Answers are held in memory for the current session only and never persisted.
 review_status: "draft – pending clinician review"
 signed_off_by: ""          # name, role
@@ -14,22 +18,22 @@ tool_name: "PLACEHOLDER scoring from design handoff v0.1 – replace with valida
 questions:
   - id: q1
     answers: [y, n, rn]
-    source: "TODO – cite guideline document + page from /sources"
+    source: "NG-2020 p. 6 (PDF 28) 1.2.1 HIV Transmission – most HIV in Nigeria is passed on through sex without a condom; NG-2020 p. 96 (PDF 118) 7.2.5 – sexually exposed adolescents and young people are a PrEP priority group."
   - id: q2
     answers: [y, n, ns]
-    source: "TODO – cite guideline document + page from /sources"
+    source: "WHO-CG-2021 p. 70 (PDF 114) Box 3.2 – high HIV incidence among women whose partners have undiagnosed or untreated HIV; NG-2020 p. 96 (PDF 118) 7.2.5/7.2.7 – serodiscordant partners are a PrEP priority group."
   - id: q3
     answers: [y, n, ns]
-    source: "TODO – cite guideline document + page from /sources"
+    source: "NG-2020 p. 15–16 (PDF 37–38) 2.5 Repeat HIV Testing – retest after a recent risk; people with ongoing high risk may retest every 3–6 months, low risk yearly. (Supports asking about recent testing; the 6-month window in the question is our choice.)"
   - id: q4
     answers: [y, n, ns]
-    source: "TODO – cite guideline document + page from /sources"
+    source: "WHO-PEP-2024 p. 5 (PDF 13) Who should receive PEP? – other STIs are listed among factors that may influence the risk of sexual HIV transmission; NG-2020 p. 108 (PDF 130) 7.8 – STI risk assessment and syndromic management."
   - id: q5
     answers: [y, n, rn]
-    source: "TODO – cite safeguarding / GBV screening guidance from /sources"
+    source: "WHO-CG-2021 p. 27 (PDF 71) good practice statement – providers should ask about intimate partner violence; NG-2020 p. 109 (PDF 131) 7.9 – sexual coercion and gender-based violence are drivers of HIV among young people; NG-2020 p. 102–103 (PDF 124–125) 7.4 post-sexual-assault PEP."
   - id: q6
     answers: [y, n, rn]
-    source: "TODO – cite guideline document + page from /sources (transactional sex)"
+    source: "NG-2020 p. 109 (PDF 131) 7.9 Prevention for Adolescents and Young Persons – transactional and intergenerational sex are named drivers of HIV among Nigerian young people."
 # Points per answer. "rn" (rather not say) always scores 0.
 scoring:
   q1: { y: 2 }

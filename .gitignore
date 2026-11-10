@@ -10,3 +10,4 @@ sources/extracts/
 .env.*
 !.env.example
 downloads/
+REVIEWER_LOGINS.md
