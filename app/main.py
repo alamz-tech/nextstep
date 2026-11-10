@@ -96,7 +96,8 @@ def create_app(settings=None, repo=None) -> FastAPI:
     def root():
         return RedirectResponse("/app/")
 
-    @app.get("/healthz")
+    @app.get("/healthz")  # note: Cloud Run reserves /healthz; use /v1/health there
+    @app.get("/v1/health")
     def health():
         return {"ok": True, "llm": container.engine.llm.name, "voice": container.voice.name, "demo_mode": settings.demo_mode,
                 "kb_served": sum(1 for c in container.kb.report() if c["served"]),

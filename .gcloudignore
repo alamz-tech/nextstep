@@ -1,0 +1,19 @@
+# Files uploaded to Cloud Build. (Without this file gcloud would use .gitignore,
+# which would drop the Flutter web build.)
+.git
+.venv
+.claude
+**/__pycache__
+.pytest_cache
+data/*.db*
+sources/*.pdf
+sources/extracts
+.env
+.env.*
+app_flutter/.dart_tool
+app_flutter/android
+app_flutter/build/app
+app_flutter/lib
+app_flutter/test
+app_flutter/assets
+!app_flutter/build/web

@@ -51,6 +51,9 @@ def main() -> None:
     app = create_app(s)
     c = TestClient(app)
     repo = app.state.container.repo
+    if "--if-empty" in sys.argv and repo.get_account_by_username("demo_facilitator"):
+        print("Demo data already present; nothing to do.")
+        return
     random.seed(7)
 
     # --- orgs & accounts (idempotent)

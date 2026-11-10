@@ -55,6 +55,10 @@ that implements the design's flows and copy. The WhatsApp channel and the origin
 default** (`FEATURE_WHATSAPP=false`, `SIM_ENABLED=false`). Meta's WhatsApp
 Business policy bans general-purpose AI chatbots, so if ever enabled it must stay a structured service.
 
+## Live demo
+
+https://nextstep-826530220017.europe-west1.run.app/app/ (fake data, resets on restart). See [docs/DEPLOY.md](docs/DEPLOY.md).
+
 ## Run it
 
 ```bash

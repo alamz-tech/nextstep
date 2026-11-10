@@ -7,3 +7,5 @@ data/*.db
 data/*.db-*
 sources/*.pdf
 sources/extracts/
+.env.*
+!.env.example

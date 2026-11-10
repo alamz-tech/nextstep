@@ -16,5 +16,5 @@ COPY app_flutter/build/web* ./app_flutter/build/web/
 RUN mkdir -p /srv/data && chown -R nextstep /srv/data
 USER nextstep
 EXPOSE 8077
-HEALTHCHECK --interval=30s --timeout=5s CMD python -c "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8077/healthz')" || exit 1
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8077", "--no-access-log"]
+HEALTHCHECK --interval=30s --timeout=5s CMD python -c "import os,urllib.request;urllib.request.urlopen('http://127.0.0.1:'+os.environ.get('PORT','8077')+'/healthz')" || exit 1
+CMD ["sh", "scripts/start.sh"]

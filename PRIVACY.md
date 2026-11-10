@@ -39,6 +39,9 @@ their own organisation only.
 Access logs are off in Docker (`--no-access-log`); application logs pass through a scrubber that removes phone-number-like
 digit runs and message fields. Request bodies are never logged. Rate-limit keys are hashes held in memory only.
 
+## Hosting (demo)
+The public demo runs on Google Cloud Run in `europe-west1` (Belgium) with fake data only. Its database is wiped on every restart. A pilot needs a hosting decision on data location (Nigeria Data Protection Act 2023).
+
 ## Not yet done
 Data protection impact assessment against the Nigeria Data Protection Act 2023; hosting decision (data location);
 retention periods confirmed with a DPO; consent rules for HIV testing of under-18s confirmed with the national
