@@ -176,3 +176,17 @@ def test_followup_flow_logs_outcomes(container):
     res = container.process("sim", uid, Inbound("button", button="fu_yes"))
     assert ("visit_confirmed", "", "") in res.events
     assert container.repo.pending_reminders(h) == []
+
+
+def test_unverified_helplines_never_shown(tmp_path):
+    """A line holding an empty [VERIFIED ...] placeholder is dropped, never shown."""
+    contacts = tmp_path / "contacts.yaml"
+    contacts.write_text('placeholders:\n  "[VERIFIED HELPLINE 1]": "0800 000 0000"\n  "[VERIFIED HELPLINE 2]": ""\n')
+    c = CopyStore(ROOT / "content", contacts)
+    text = c.t(("crisis", "violence"), "en")
+    assert "0800 000 0000" in text and "[VERIFIED" not in text
+    assert "[VERIFIED" not in c.t(("age", "under15"), "pcm")
+    for flow in c.public_json().values():
+        for lang in ("en", "pcm"):
+            for v in (flow.get(lang) or {}).values():
+                assert "[VERIFIED" not in v

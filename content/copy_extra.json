@@ -67,7 +67,8 @@
       "delete": "Delete my data",
       "staff_signin": "Staff sign in",
       "crisis_title": "You are not alone",
-      "call": "Call"
+      "call": "Call",
+      "call_helpline": "Call [VERIFIED HELPLINE 1]"
     },
     "pcm": {
       "not_medical_advice": "This na general information, e no be medical advice. Health worker fit help you with your own matter.",
@@ -94,7 +95,8 @@
       "delete": "Delete my data",
       "staff_signin": "Staff sign in",
       "crisis_title": "You no dey alone",
-      "call": "Call"
+      "call": "Call",
+      "call_helpline": "Call [VERIFIED HELPLINE 1]"
     }
   }
 }

@@ -52,6 +52,7 @@ tests in `app_flutter/test/privacy_test.dart`.
 ## Known limitations
 * Knowledge base: only 2 draft chunks with text, citations TODO; no guideline PDFs ingested yet.
 * Private-check scoring is a placeholder from the design handoff, not a validated tool.
+* Helplines: 0800 800 2000 (She Writes Woman) and 112 are filled from web sources checked 10 Nov 2026 but **not yet call-tested**; line 2 and the child helpline stay hidden until confirmed (see `config/contacts.yaml`).
 * Keyword crisis detection misses indirect phrasing; the LLM layer is untested against real traffic. Hausa has no patterns yet.
 * Pidgin copy and patterns need native-speaker review with young women 15–24.
 * Name redaction is heuristic (capitalisation-based) and over-redacts; lower-case names can slip through.

@@ -267,7 +267,7 @@ class PreviewScreen extends StatelessWidget {
         return Scaffold(
           appBar: nsBar(title: t('app', 'crisis_title'), onBack: back, actions: [exit]),
           body: NsBody(
-            bottom: PrimaryButton('${t('app', 'call')} [VERIFIED HELPLINE 1]', onPressed: nop, color: W.berry),
+            bottom: PrimaryButton(t('app', 'call_helpline'), onPressed: nop),
             children: [Panel(border: W.berry, child: Text(t('crisis', 'violence'), style: bodyText))],
           ),
         );

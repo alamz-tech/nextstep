@@ -3,17 +3,38 @@
 # NEVER fill these from memory or a web search. Each value must be a number or
 # service you (or a safeguarding partner) have personally verified is live,
 # free, confidential and appropriate for young women in the demo state.
-# Record who verified it and when. Leave a value empty to keep the [PLACEHOLDER]
-# visible in the UI.
+# Record who verified it and when.
+#
+# A line in a message that contains an EMPTY [VERIFIED ...] placeholder is left out
+# of what users see, so an unconfirmed helpline is never shown as a placeholder or a number.
+#
+# STATUS (10 Nov 2026): sources checked on the web by Alamz Tech; NOT YET CALL-TESTED.
+# Before any real user sees these: call each number, confirm it is answered, who answers,
+# the hours, that it is free (toll-free) and confidential, and ask She Writes Woman whether
+# they are happy to be listed. Recheck every 3 months: a dead number here is the worst
+# failure the app could have.
 placeholders:
-  "[VERIFIED HELPLINE 1]": ""          # e.g. GBV helpline — verified_by: , verified_on:
+  # She Writes Woman (Safe Place Nigeria): 24/7 toll-free mental health helpline,
+  # trained/licensed counsellors, multilingual. Source: the organisation's own website.
+  # source_checked_on: 2026-11-10  call_tested_on: ""  permission_to_list: ""
+  "[VERIFIED HELPLINE 1]": "0800 800 2000"
+  "[VERIFIED MENTAL HEALTH LINE]": "0800 800 2000"
+
+  # Provisional "0800 72 73 2255" (federal line for violation of girls and women, said to be run
+  # by Cece Yara Foundation) appears only in third-party directories. Left EMPTY until confirmed.
   "[VERIFIED HELPLINE 2]": ""
-  "[VERIFIED MENTAL HEALTH LINE]": ""
+
+  # Child helpline "0800 800 8001" (24h, listed in directories) could serve the 15–17 group and
+  # the under-15 exit message. Left EMPTY until confirmed by a call.
   "[VERIFIED CHILD HELPLINE]": ""
-  "[EMERGENCY NUMBER]": ""
+
+  # National emergency number, approved by the National Economic Council on 30 Apr 2026, toll-free.
+  # Nationwide rollout is still being organised; works in Lagos.
+  # source_checked_on: 2026-11-10  call_tested_on: ""
+  "[EMERGENCY NUMBER]": "112"
+
   "[SELF-TEST DISTRIBUTION POINTS]": ""
   "[TRANSPORT SUPPORT INFO, if the programme offers it]": ""
 
-# Number dialled by the "Call a helpline" button (tel: link). Must be one of the
-# verified numbers above. Empty = the button shows a demo notice instead.
-call_button_number: ""
+# Number dialled by the "Call" button (tel: link). Must be one of the numbers above.
+call_button_number: "0800 800 2000"

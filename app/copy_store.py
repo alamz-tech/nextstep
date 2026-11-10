@@ -46,7 +46,12 @@ class CopyStore:
         def rep(m: re.Match) -> str:
             name = m.group(0)[1:-1]
             return self.fills.get(name, m.group(0))
-        return PLACEHOLDER.sub(rep, text)
+        out = PLACEHOLDER.sub(rep, text)
+        if "[VERIFIED " in out:
+            # Never show an unconfirmed helpline: drop any line that still has one.
+            out = "\n".join(line for line in out.split("\n") if "[VERIFIED " not in line)
+            out = re.sub(r"\n{3,}", "\n\n", out).strip("\n")
+        return out
 
     def t(self, ref: list[str] | tuple[str, str], lang: str = "en", **params: Any) -> str:
         text = self.fill(self.raw(ref[0], ref[1], lang))
