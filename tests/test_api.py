@@ -189,3 +189,12 @@ def test_chat_design_flow(client, org_setup):
     r = client.post("/v1/chat", json={"kind": "text", "text": "DELETE"}, headers=h).json()
     assert r["ended"] and any(a["type"] == "delete_user" for a in r["actions"])
     assert client.app.state.container.repo.get_referral(card["code"]) is None
+
+
+def test_chat_start_skips_setup(client):
+    h = H()
+    r = client.post("/v1/chat/start", json={"lang": "pcm", "tier": "15_17"}, headers=h).json()
+    assert r["messages"][0]["ref"] == ["qa", "prompt"] and r["lang"] == "pcm" and r["stage"] == "qa"
+    a = client.post("/v1/chat", json={"kind": "text", "text": "Can I get HIV from kissing?"}, headers=h).json()
+    assert any("transmission-kissing" in (m.get("chunk") or {}).get("ids", []) for m in a["messages"])
+    assert client.post("/v1/chat/start", json={"lang": "en", "tier": "under_15"}, headers=h).status_code == 422

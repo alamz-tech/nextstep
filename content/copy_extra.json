@@ -68,7 +68,12 @@
       "staff_signin": "Staff sign in",
       "crisis_title": "You are not alone",
       "call": "Call",
-      "call_helpline": "Call [VERIFIED HELPLINE 1]"
+      "call_helpline": "Call [VERIFIED HELPLINE 1]",
+      "pin_wrong": "Wrong PIN. Try again.",
+      "pin_choose": "Choose a 4-digit PIN",
+      "pin_again": "Enter it again",
+      "delete_confirm": "This removes everything NextStep saved on this phone, and your referral codes on our server. It can't be undone.",
+      "cancel": "Cancel"
     },
     "pcm": {
       "not_medical_advice": "This na general information, e no be medical advice. Health worker fit help you with your own matter.",
@@ -96,7 +101,12 @@
       "staff_signin": "Staff sign in",
       "crisis_title": "You no dey alone",
       "call": "Call",
-      "call_helpline": "Call [VERIFIED HELPLINE 1]"
+      "call_helpline": "Call [VERIFIED HELPLINE 1]",
+      "pin_wrong": "PIN no correct. Try again.",
+      "pin_choose": "Choose 4-number PIN",
+      "pin_again": "Type am again",
+      "delete_confirm": "This one go clear everything NextStep save for this phone, and your referral code for our server. You no fit bring am back.",
+      "cancel": "Cancel"
     }
   }
 }

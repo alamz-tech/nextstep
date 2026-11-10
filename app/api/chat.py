@@ -11,12 +11,17 @@ import base64
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from pydantic import BaseModel, Field
 
-from ..engine.engine import Inbound
+from ..engine.engine import Inbound, Result, new_state
 from .learner import INSTALL_RE
 from .ratelimit import limit
 
 # Actions the app itself must carry out (local notifications, wiping the device).
 CLIENT_ACTIONS = {"schedule_followups", "ensure_followup", "cancel_followups", "simulate_followup", "delete_user"}
+
+
+class StartIn(BaseModel):
+    lang: str = Field(default="en", pattern="^(en|pcm)$")
+    tier: str = Field(pattern="^(15_17|18_24)$")
 
 
 class ChatIn(BaseModel):
@@ -55,6 +60,16 @@ def make_router(container) -> APIRouter:
     @r.get("/chat/copy")
     def copy():
         return container.copy.public_json()
+
+    @r.post("/chat/start")
+    def chat_start(body: StartIn, iid: str = Depends(install_id)):
+        """Open "Ask a question". Consent and age were already given in the app's first-time
+        setup (POST /v1/learner/onboard), so the chat starts at the Q&A prompt."""
+        st = new_state(body.lang)
+        st.update(consented=True, tier=body.tier, stage="qa")
+        container.repo.save_session(container.uid("app", iid), st)
+        res = Result(messages=[eng.m(("qa", "prompt"))], state=st)
+        return respond(res, False)
 
     @r.post("/chat")
     def chat(body: ChatIn, iid: str = Depends(install_id)):

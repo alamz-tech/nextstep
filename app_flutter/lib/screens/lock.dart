@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../core/state.dart';
 
 /// Quick-exit disguise: a working calculator with no app branding.
-/// To return to NextStep, press and hold "=".
+/// To return: with a PIN, type it and press "="; without a PIN, press and hold "=".
 class NeutralScreen extends StatefulWidget {
   const NeutralScreen({super.key});
   @override
@@ -26,6 +26,7 @@ class _NeutralScreenState extends State<NeutralScreen> {
           acc = null;
           op = null;
         } else {
+          if (l == '=' && context.read<AppState>().unlockWithPin(entry)) return;
           _eval();
           op = l == '=' ? null : l;
           entry = '';
@@ -54,7 +55,7 @@ class _NeutralScreenState extends State<NeutralScreen> {
                 key: Key('calc-$l'),
                 style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
                 onPressed: () => _press(l),
-                onLongPress: l == '=' ? s.unlock : null,
+                onLongPress: l == '=' ? s.unlockNoPin : null,
                 child: Text(l, style: const TextStyle(fontSize: 24)),
               ),
             ),

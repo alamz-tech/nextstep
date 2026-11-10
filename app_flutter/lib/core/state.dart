@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -19,6 +23,16 @@ class Msg {
   final String from; // bot | user | sys
 }
 
+/// A referral code the learner got, kept only on this device (encrypted storage).
+class SavedCode {
+  SavedCode(this.code, this.serviceName, this.area, this.created);
+  final String code, serviceName, area;
+  final DateTime created;
+  bool get active => DateTime.now().difference(created).inDays < 90;
+  Map<String, dynamic> toJson() => {'code': code, 'name': serviceName, 'area': area, 'created': created.toIso8601String()};
+  static SavedCode fromJson(Map j) => SavedCode(j['code'], j['name'] ?? '', j['area'] ?? '', DateTime.parse(j['created']));
+}
+
 /// App state. The chat lives in memory only: nothing the learner types is kept
 /// on the device, and the server keeps no message text.
 class AppState extends ChangeNotifier {
@@ -27,25 +41,28 @@ class AppState extends ChangeNotifier {
   late Api api;
 
   bool ready = false;
-  bool disguised = false; // quick exit
+  bool setupDone = false;
+  String tier = '';
+  String lang = 'en';
+  bool lowData = false;
+  String? _pinHash, _pinSalt;
+  bool locked = false; // PIN screen showing
+  bool disguised = false; // quick exit calculator showing
   bool busy = false;
   bool offline = false;
   bool demoMode = false;
-  String lang = 'en';
   List<Msg> msgs = [];
+  List<SavedCode> codes = [];
+  Map<String, dynamic>? pendingCrisis; // set when the safety layer fires; the crisis screen shows it
   Staff? staff;
 
+  bool get hasPin => _pinHash != null;
+  SavedCode? get activeCode => codes.where((c) => c.active).firstOrNull;
   String t(List ref, [Map? p]) => copy.t(ref, lang, p);
 
   Future<void> init() async {
     await copy.load();
-    var id = await store.read('install_id');
-    if (id == null) {
-      id = const Uuid().v4();
-      await store.write('install_id', id);
-    }
-    api = Api(id);
-    lang = await store.read('lang') ?? 'en';
+    await _loadLocal();
     ready = true;
     notifyListeners();
     try {
@@ -55,15 +72,144 @@ class AppState extends ChangeNotifier {
     } catch (_) {}
   }
 
-  /// Opening the app: say Hi (or deliver a due check-in).
-  Future<void> start() async {
-    if (msgs.isNotEmpty) return;
-    final due = int.tryParse(await store.read('followup_due') ?? '');
-    if (due != null && DateTime.now().millisecondsSinceEpoch >= due) {
-      await store.write('followup_due', null);
-      await send({'kind': 'followup_due'});
+  Future<void> _loadLocal() async {
+    var id = await store.read('install_id');
+    if (id == null) {
+      id = const Uuid().v4();
+      await store.write('install_id', id);
+    }
+    api = Api(id);
+    final p = await store.readJson('prefs') ?? {};
+    setupDone = p['setupDone'] == true;
+    tier = p['tier'] ?? '';
+    lang = p['lang'] ?? 'en';
+    lowData = p['lowData'] == true;
+    _pinHash = p['pinHash'];
+    _pinSalt = p['pinSalt'];
+    locked = setupDone && _pinHash != null;
+    final c = await store.read('codes');
+    codes = c == null ? [] : (jsonDecode(c) as List).map((e) => SavedCode.fromJson(e)).toList();
+  }
+
+  Future<void> _savePrefs() => store.writeJson('prefs', {
+        'setupDone': setupDone, 'tier': tier, 'lang': lang, 'lowData': lowData, 'pinHash': _pinHash, 'pinSalt': _pinSalt,
+      });
+
+  // ---------------------------------------------------------------- first-time setup
+  /// Under 15: count it (aggregate only) and keep nothing on the device.
+  Future<void> under15() async {
+    try {
+      await api.post('/v1/learner/onboard', {'lang': lang, 'age_tier': 'under_15'});
+    } catch (_) {}
+  }
+
+  Future<void> finishSetup(String ageTier, String language) async {
+    tier = ageTier;
+    lang = language;
+    setupDone = true;
+    await _savePrefs();
+    try {
+      await api.post('/v1/learner/onboard', {'lang': lang, 'age_tier': tier});
+    } catch (_) {}
+    notifyListeners();
+  }
+
+  // ---------------------------------------------------------------- settings
+  Future<void> setLang(String l) async {
+    lang = l;
+    await _savePrefs();
+    notifyListeners();
+  }
+
+  Future<void> setLowData(bool v) async {
+    lowData = v;
+    await _savePrefs();
+    notifyListeners();
+  }
+
+  String _hash(String pin, String salt) => sha256.convert(utf8.encode('$salt:$pin')).toString();
+
+  Future<void> setPin(String? pin) async {
+    if (pin == null) {
+      _pinHash = _pinSalt = null;
     } else {
-      await send({'kind': 'text', 'text': 'Hi'}, echo: false);
+      final r = Random.secure();
+      _pinSalt = base64Url.encode(List<int>.generate(16, (_) => r.nextInt(256)));
+      _pinHash = _hash(pin, _pinSalt!);
+    }
+    await _savePrefs();
+    notifyListeners();
+  }
+
+  bool unlockWithPin(String pin) {
+    if (_pinHash == null || _hash(pin, _pinSalt!) != _pinHash) return false;
+    locked = false;
+    disguised = false;
+    notifyListeners();
+    return true;
+  }
+
+  void lockIfPin() {
+    if (setupDone && hasPin && !locked) {
+      locked = true;
+      notifyListeners();
+    }
+  }
+
+  /// Delete my data: server first (referral codes, chat state), then wipe the device.
+  Future<bool> deleteEverything() async {
+    var ok = true;
+    try {
+      await api.delete('/v1/learner/data');
+    } catch (_) {
+      ok = false;
+    }
+    try {
+      await api.post('/v1/chat', {'kind': 'text', 'text': 'DELETE'});
+    } catch (_) {}
+    await Notifications.cancelAll();
+    await store.wipe();
+    msgs = [];
+    await _loadLocal();
+    notifyListeners();
+    return ok;
+  }
+
+  // ---------------------------------------------------------------- referral codes
+  Future<void> addCode(SavedCode c) async {
+    codes.insert(0, c);
+    await store.write('codes', jsonEncode(codes.map((e) => e.toJson()).toList()));
+    notifyListeners();
+  }
+
+  // ---------------------------------------------------------------- quick exit
+  void quickExit() {
+    msgs = [];
+    disguised = true;
+    locked = hasPin;
+    notifyListeners();
+  }
+
+  /// From the calculator: without a PIN, a long-press on "=" returns.
+  void unlockNoPin() {
+    if (hasPin) return;
+    disguised = false;
+    notifyListeners();
+  }
+
+  // ---------------------------------------------------------------- Ask (chat)
+  Future<void> startAsk() async {
+    msgs = [];
+    busy = true;
+    offline = false;
+    notifyListeners();
+    try {
+      await _apply(await api.post('/v1/chat/start', {'lang': lang, 'tier': tier}) as Map<String, dynamic>);
+    } catch (_) {
+      offline = true;
+    } finally {
+      busy = false;
+      notifyListeners();
     }
   }
 
@@ -79,8 +225,6 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     try {
       await _apply(await api.post('/v1/chat', body) as Map<String, dynamic>);
-    } on OfflineException {
-      offline = true;
     } catch (_) {
       offline = true;
     } finally {
@@ -106,63 +250,28 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  /// Demo builds: the design's sample voice note.
-  Future<void> sendDemoVoice() async {
-    if (busy) return;
-    msgs.add(Msg({'voice': true, 'ref': ['qa', 'user_voice']}, from: 'user'));
-    busy = true;
-    notifyListeners();
-    try {
-      await _apply(await api.post('/v1/chat/demo-voice') as Map<String, dynamic>);
-    } catch (_) {
-      offline = true;
-    } finally {
-      busy = false;
-      notifyListeners();
-    }
-  }
-
   Future<void> _apply(Map<String, dynamic> r) async {
+    final crisisRefs = <List>[];
     for (final m in (r['messages'] as List).cast<Map<String, dynamic>>()) {
       msgs.add(Msg(m, from: m['kind'] == 'system' ? 'sys' : 'bot'));
+      final ref = m['ref'] as List?;
+      if (ref != null && ref[0] == 'crisis' && ['violence', 'selfharm', 'pep'].contains(ref[1])) crisisRefs.add(ref);
     }
-    if (r['lang'] is String && r['lang'] != lang) {
-      lang = r['lang'];
-      await store.write('lang', lang);
-    }
+    if (crisisRefs.isNotEmpty) pendingCrisis = {'refs': crisisRefs};
     for (final a in (r['actions'] as List).cast<Map<String, dynamic>>()) {
       switch (a['type']) {
         case 'schedule_followups':
         case 'ensure_followup':
           await Notifications.scheduleCheckIns(t(['followup', 'ping']), t(['followup', 'ask']));
-          await store.write('followup_due',
-              '${DateTime.now().add(const Duration(days: 3)).millisecondsSinceEpoch}');
         case 'cancel_followups':
           await Notifications.cancelAll();
-          await store.write('followup_due', null);
-        case 'simulate_followup':
-          busy = false;
-          await send({'kind': 'followup_due'});
         case 'delete_user':
-          // STOP / DELETE: wipe the device too. Only the goodbye message stays on screen.
+          // STOP / DELETE typed in the chat: wipe the device too.
           await Notifications.cancelAll();
           await store.wipe();
-          await store.write('install_id', const Uuid().v4());
-          api = Api((await store.read('install_id'))!);
+          await _loadLocal();
       }
     }
-  }
-
-  void quickExit() {
-    msgs = [];
-    disguised = true;
-    notifyListeners();
-  }
-
-  void unlock() {
-    disguised = false;
-    notifyListeners();
-    start();
   }
 
   void signOutStaff() {

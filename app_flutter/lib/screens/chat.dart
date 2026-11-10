@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../core/recorder.dart';
 import '../core/state.dart';
+import '../ui/kit.dart';
 import '../widgets/chat_ui.dart';
 
 /// The learner app: one chat screen, built to the design's WhatsApp-style chat frame.
@@ -24,12 +26,13 @@ class _ChatScreenState extends State<ChatScreen> {
   final _player = AudioPlayer();
   bool recording = false;
   int _seen = 0;
+  bool _crisisOpen = false;
 
   @override
   void initState() {
     super.initState();
     _ctl.addListener(() => setState(() {}));
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<AppState>().start());
+    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<AppState>().startAsk());
   }
 
   @override
@@ -57,22 +60,28 @@ class _ChatScreenState extends State<ChatScreen> {
       _seen = s.msgs.length;
       _toBottom();
       final last = s.msgs.isNotEmpty ? s.msgs.last.data : null;
-      if (last?['audio'] != null) _play(last!['audio']);
+      if (last?['audio'] != null && !s.lowData) _play(last!['audio']);
+      if (s.pendingCrisis != null && !_crisisOpen) {
+        // The safety layer fired: show the crisis screen over the chat (once).
+        _crisisOpen = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          context.push('/crisis').then((_) {
+            s.pendingCrisis = null;
+            _crisisOpen = false;
+          });
+        });
+      }
     }
     var lastActive = -1;
     for (var i = 0; i < s.msgs.length; i++) {
       final d = s.msgs[i].data;
       if (s.msgs[i].from == 'bot' && ((d['buttons'] as List?)?.isNotEmpty == true || d['list'] != null)) lastActive = i;
     }
-    final demo = s.demoMode;
     return Scaffold(
       backgroundColor: W.bg,
-      appBar: chatHeader(
-        menu: [PopupMenuItem(key: const Key('quick-exit'), value: 'exit', child: Text(s.t(['app', 'quick_exit'])))],
-        onMenu: (v) {
-          if (v == 'exit') s.quickExit();
-        },
-      ),
+      appBar: nsBar(title: 'NextStep', brand: true, onBack: () => context.go('/'),
+          actions: [quickExitIcon(s.quickExit, s.t(['app', 'quick_exit']))]),
       body: SafeArea(
         top: false,
         child: Column(children: [
@@ -85,7 +94,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   controller: _scroll,
                   padding: const EdgeInsets.fromLTRB(10, 12, 10, 16),
                   children: [
-                    if (demo) SysPill(s.t(['sim', 'banner']), yellow: true),
                     for (var i = 0; i < s.msgs.length; i++)
                       Padding(padding: const EdgeInsets.only(top: 8), child: _msg(context, s, s.msgs[i], i == lastActive && !s.busy)),
                     if (s.offline) Padding(padding: const EdgeInsets.only(top: 8), child: SysPill(s.t(['app', 'offline']))),
@@ -94,13 +102,13 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
           ),
-          _composer(s, demo),
+          _composer(s),
         ]),
       ),
     );
   }
 
-  Widget _composer(AppState s, bool demo) {
+  Widget _composer(AppState s) {
     final hasText = _ctl.text.trim().isNotEmpty;
     return Container(
       color: W.bg,
@@ -163,6 +171,20 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  /// Buttons that belong to other parts of the app go there instead of the chat.
+  void _tap(AppState s, String id, List ref) {
+    switch (id) {
+      case 'menu':
+        context.go('/');
+      case 'qa_find' || 'cant_find' || 'check_find' || 'menu_find' || 'fu_other':
+        context.go('/services');
+      case 'menu_check' || 'check_start':
+        context.go('/check');
+      default:
+        s.tapButton(id, ref);
+    }
+  }
+
   void _send(AppState s) {
     final t = _ctl.text.trim();
     if (t.isEmpty) return;
@@ -221,13 +243,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   ]);
                   if (pick != null) {
                     final r = rows.firstWhere((r) => r['id'] == pick);
-                    s.tapButton(pick, r['ref']);
+                    _tap(s, pick, r['ref']);
                   }
                 }
               : null,
         ),
       for (final b in ((d['buttons'] as List?) ?? []).cast<Map>())
-        ReplyRow(key: Key('btn-${b['id']}'), label: s.t(b['ref']), onTap: active ? () => s.tapButton(b['id'], b['ref']) : null),
+        ReplyRow(key: Key('btn-${b['id']}'), label: s.t(b['ref']), onTap: active ? () => _tap(s, b['id'], b['ref']) : null),
     ];
     Widget? card;
     var text = _text(s, d);

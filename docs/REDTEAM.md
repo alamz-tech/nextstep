@@ -140,6 +140,9 @@ deterministic layers (keyword crisis detection, scope guardrails, consent/age ga
 
 | ID | Behaviour |
 |---|---|
-| app-01 | quick exit shows a neutral calculator with no NextStep text |
-| app-02 | quick exit clears the chat and returns only on long-press = |
-| app-03 | chat text is never written to device storage |
+| app-01 | first open shows setup, not the chat; setup leads to Home |
+| app-02 | under-15 exit saves nothing |
+| app-03 | quick exit shows a neutral calculator with no NextStep text |
+| app-04 | with a PIN, quick exit returns only after PIN and =; wrong PIN does not unlock |
+| app-05 | returning user with a PIN sees the PIN screen first; backgrounding locks |
+| app-06 | chat text is never written to device storage |
