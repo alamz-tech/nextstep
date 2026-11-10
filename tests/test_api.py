@@ -92,7 +92,7 @@ def test_facilitator_session_and_question_box(client, org_setup):
     s = client.post("/v1/sessions", json={"setting": "school", "session_date": "2026-11-12", "age_band": "15_17",
                                           "audience_size": 40}, headers=f).json()
     code, sid = s["join_code"], s["id"]
-    assert s["join_url"].endswith("/app/#/join/" + code)
+    assert s["join_url"].endswith("/join/" + code)
     assert client.post("/v1/sessions", json={"setting": "school", "session_date": "2026-11-12", "age_band": "10_14",
                                               "audience_size": 40}, headers=f).status_code == 422
     assert client.get(f"/v1/join/{code}").json()["open"]
@@ -198,3 +198,13 @@ def test_chat_start_skips_setup(client):
     a = client.post("/v1/chat", json={"kind": "text", "text": "Can I get HIV from kissing?"}, headers=h).json()
     assert any("transmission-kissing" in (m.get("chunk") or {}).get("ids", []) for m in a["messages"])
     assert client.post("/v1/chat/start", json={"lang": "en", "tier": "under_15"}, headers=h).status_code == 422
+
+
+def test_landing_and_entry_routes(client):
+    r = client.get("/")
+    assert r.status_code == 200 and "<title>NextStep</title>" in r.text and "HIV" not in r.text.split("</title>")[0]
+    assert 'href="/app/"' in r.text and "Demo" in r.text
+    assert client.get("/staff", follow_redirects=False).headers["location"] == "/app/#/staff"
+    assert client.get("/join/ab-c12", follow_redirects=False).headers["location"] == "/app/#/join/ABC12"
+    p = client.get("/privacy")
+    assert p.status_code == 200 and "<table>" in p.text

@@ -151,7 +151,7 @@ def make_router(container) -> APIRouter:
     def public_session(fs: dict) -> dict:
         return {k: fs[k] for k in ("id", "setting", "session_date", "age_band", "audience_size", "lang", "join_code",
                                     "status", "joins", "submitted", "flagged", "filtered", "referral_cards")} | {
-            "join_url": f"{s.public_base_url.rstrip('/')}/app/#/join/{fs['join_code']}",
+            "join_url": f"{s.public_base_url.rstrip('/')}/join/{fs['join_code']}",
             "checklist": __import__("json").loads(fs["checklist_json"] or "{}")}
 
     @r.post("/sessions")

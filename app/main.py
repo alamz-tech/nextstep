@@ -106,9 +106,44 @@ def create_app(settings=None, repo=None) -> FastAPI:
             raise HTTPException(404, "APK not built")
         return FileResponse(apk, media_type="application/vnd.android.package-archive", filename=name)
 
-    @app.get("/")
-    def root():
-        return RedirectResponse("/app/")
+    landing_tpl = (ROOT / "app" / "static" / "landing" / "index.html").read_text(encoding="utf-8")
+    repo = settings.public_repo_url
+    landing_html = landing_tpl.replace(
+        "<!--DEMO_BAR-->",
+        '<div class="demo" role="status">Demo &ndash; test data</div>' if settings.demo_mode else "",
+    ).replace(
+        "<!--REPO_LINK-->",
+        f'<a href="{repo}" data-t="repo">Open source</a> (MIT)' if repo else '<span data-t="repo">Open source</span> (MIT)',
+    )
+
+    @app.get("/", response_class=HTMLResponse)
+    def landing():
+        """Public landing page: plain HTML, no Flutter, loads fast on slow mobile data."""
+        return HTMLResponse(landing_html, headers={"Cache-Control": "no-cache"})
+
+    @app.get("/staff")
+    def staff_entry():
+        return RedirectResponse("/app/#/staff")
+
+    @app.get("/join/{code}")
+    def join_entry(code: str):
+        """Short link printed as the classroom QR code; opens the anonymous question page."""
+        import re as _re
+        return RedirectResponse(f"/app/#/join/{_re.sub(r'[^A-Za-z0-9]', '', code)[:12].upper()}")
+
+    @app.get("/privacy", response_class=HTMLResponse)
+    def privacy():
+        import markdown
+        body = markdown.markdown((ROOT / "PRIVACY.md").read_text(encoding="utf-8"), extensions=["tables"])
+        return HTMLResponse(
+            '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+            '<title>NextStep · Privacy</title><link rel="icon" href="/static/shared/logo.svg" type="image/svg+xml">'
+            "<style>body{margin:0;background:#FAF8F4;color:#1B1F23;font:16px/24px system-ui,sans-serif}"
+            "main{max-width:720px;margin:0 auto;padding:16px}a{color:#A3305A}table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}"
+            "td,th{border:1px solid #E3DFD7;padding:6px;vertical-align:top;text-align:left}code{font-size:13px}"
+            "@media (prefers-color-scheme:dark){body{background:#0E1517;color:#EEF2F1}a{color:#E58AAE}td,th{border-color:#2A3A3E}}</style></head>"
+            f'<body><main><p><a href="/">&larr; NextStep</a></p>{body}</main></body></html>'
+        )
 
     @app.get("/healthz")  # note: Cloud Run reserves /healthz; use /v1/health there
     @app.get("/v1/health")

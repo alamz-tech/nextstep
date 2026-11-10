@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NextStep</title>
+<meta name="description" content="NextStep">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/static/shared/logo.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:'Atkinson Hyperlegible';font-weight:400;font-display:swap;src:url(/static/fonts/AtkinsonHyperlegible-400.woff2) format('woff2')}
+@font-face{font-family:'Atkinson Hyperlegible';font-weight:700;font-display:swap;src:url(/static/fonts/AtkinsonHyperlegible-700.woff2) format('woff2')}
+:root{--bg:#FAF8F4;--surface:#FFFFFF;--text:#1B1F23;--text2:#4A5560;--line:#E3DFD7;--berry:#A3305A;--on-berry:#FFFFFF;--tint:#FBE4EC;--demo:#F6C453;--on-demo:#1B1F23;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0E1517;--surface:#172225;--text:#EEF2F1;--text2:#A9B7B5;--line:#2A3A3E;--berry:#E58AAE;--on-berry:#0E1517;--tint:#4B1528;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/24px 'Atkinson Hyperlegible',system-ui,sans-serif}
+a{color:var(--berry)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--demo);outline-offset:2px}
+.demo{background:var(--demo);color:var(--on-demo);font-size:13px;line-height:18px;font-weight:700;text-align:center;padding:4px 16px}
+header{background:var(--surface);border-bottom:1px solid var(--line)}
+.bar,.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.bar{display:flex;align-items:center;gap:10px;min-height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:var(--text);text-decoration:none;flex:1;min-width:0}
+.lang{display:flex;border:2px solid var(--berry);border-radius:999px;overflow:hidden}
+.lang button{min-height:36px;min-width:44px;padding:0 10px;border:0;background:transparent;color:var(--berry);font:700 14px 'Atkinson Hyperlegible',sans-serif;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--berry);color:var(--on-berry)}
+.exit{min-height:40px;min-width:44px;padding:0 12px;border:2px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);font:700 14px 'Atkinson Hyperlegible',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+main{padding:24px 0 8px}
+section{margin:0 0 24px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+h1{font-size:28px;line-height:34px;margin:8px 0 12px}
+h2{font-size:20px;line-height:28px;margin:0 0 12px}
+p{margin:0 0 12px}
+.lead{font-size:18px;line-height:27px;color:var(--text2)}
+.start{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:999px;background:var(--berry);color:var(--on-berry);font-size:18px;font-weight:700;text-decoration:none;margin:20px 0 8px}
+.small{font-size:14px;line-height:20px;color:var(--text2);margin:0}
+ol,ul{margin:0;padding:0;list-style:none}
+.steps li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.steps li:first-child{border-top:0;padding-top:0}
+.num{flex:0 0 32px;height:32px;border-radius:50%;background:var(--tint);color:var(--berry);font-weight:700;display:flex;align-items:center;justify-content:center}
+.priv li{padding:8px 0 8px 28px;position:relative;border-top:1px solid var(--line)}
+.priv li:first-child{border-top:0;padding-top:0}
+.priv li:before{content:"";position:absolute;left:4px;top:15px;width:10px;height:10px;border-radius:50%;background:var(--berry)}
+.priv li:first-child:before{top:7px}
+footer{border-top:1px solid var(--line);padding:20px 0 32px;font-size:14px;line-height:22px;color:var(--text2)}
+footer p{margin:0 0 6px}
+.draft{display:none;font-size:13px;color:var(--text2)}
+html[lang=pcm] .draft{display:block}
+@media (min-width:720px){h1{font-size:36px;line-height:44px}main{padding-top:40px}}
+</style>
+</head>
+<body>
+<!--DEMO_BAR-->
+<header>
+  <div class="bar">
+    <a class="brand" href="/">
+      <svg width="32" height="32" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="14" fill="#A3305A"/><path d="M11 35h8v-7.5h8V20h9" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="12.5" r="3.6" fill="#F6C453"/></svg>
+      NextStep
+    </a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="pcm" aria-pressed="false">Pidgin</button>
+    </div>
+    <button type="button" class="exit" id="exit" aria-label="Quick exit">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"/></svg><span data-t="exit">Exit</span>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section aria-labelledby="h-hero">
+    <h1 id="h-hero" data-t="h1">Private, free help to stay safe from HIV.</h1>
+    <p class="lead" data-t="lead">Ask your questions, find your next step and get to a free, youth-friendly clinic, all without giving your name.</p>
+    <a class="start" href="/app/" data-t="start">Start</a>
+    <p class="small" data-t="noname">No name or phone number needed.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="h-how">
+    <h2 id="h-how" data-t="how">How it works</h2>
+    <ol class="steps">
+      <li><span class="num" aria-hidden="true">1</span><span data-t="s1">Ask your questions privately, by typing or by voice.</span></li>
+      <li><span class="num" aria-hidden="true">2</span><span data-t="s2">Do a short private check to find your next step.</span></li>
+      <li><span class="num" aria-hidden="true">3</span><span data-t="s3">Get a referral code for a youth-friendly clinic near you.</span></li>
+    </ol>
+  </section>
+
+  <section class="panel" aria-labelledby="h-priv">
+    <h2 id="h-priv" data-t="priv">Your privacy</h2>
+    <ul class="priv">
+      <li data-t="p1">We never ask for your name or phone number.</li>
+      <li data-t="p2">Your messages are not stored.</li>
+      <li data-t="p3">You can delete your data anytime.</li>
+      <li data-t="p4">Lock the app with a PIN, and close it fast with quick exit.</li>
+    </ul>
+  </section>
+
+  <section class="panel" aria-labelledby="h-edu">
+    <h2 id="h-edu" data-t="edu">For educators and NGOs</h2>
+    <p data-t="edu1">Run a session where students ask questions anonymously from their own phones, by scanning a code. You get answers from reviewed content and a session report with counts only, never names.</p>
+    <a href="/staff" data-t="staff">Staff sign in</a>
+  </section>
+
+  <section class="panel" aria-labelledby="h-clin">
+    <h2 id="h-clin" data-t="clin">For clinics</h2>
+    <p data-t="clin1">When a young person shows you her referral code, enter it to confirm the visit. No names or health details are shared.</p>
+    <a href="/staff" data-t="staff">Staff sign in</a>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong data-t="f1">Not medical advice. In an emergency call 112.</strong></p>
+    <p><!--REPO_LINK--> · <span data-t="f2">Built by Alamz Tech Ltd</span></p>
+    <p><a href="/privacy" data-t="f3">Privacy policy</a> · <span data-t="f4">Contact:</span> [CONTACT EMAIL]</p>
+    <p class="draft">Pidgin text is a draft for review.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var pcm = {
+    exit: "Comot", h1: "Free help wey private, to stay safe from HIV.",
+    lead: "Ask your question, find your next step and reach free clinic wey like young people, without giving your name.",
+    start: "Start", noname: "You no need give name or phone number.",
+    how: "How e dey work", s1: "Ask your question for private, by typing or by voice.",
+    s2: "Do short private check to find your next step.", s3: "Get referral code for clinic wey near you and like young people.",
+    priv: "Your privacy", p1: "We no go ever ask your name or phone number.", p2: "We no dey keep your messages.",
+    p3: "You fit delete your data anytime.", p4: "Lock the app with PIN, and close am quick with quick exit.",
+    edu: "For teachers and NGOs",
+    edu1: "Run session wey students go ask question without name from their own phone, by scanning code. You go get answers from content wey dem don check, and session report wey get only numbers, no names.",
+    staff: "Staff sign in", clin: "For clinics",
+    clin1: "When young person show you her referral code, enter am to confirm say she come. Nobody go share name or health details.",
+    f1: "This no be medical advice. If emergency dey, call 112.", f2: "Na Alamz Tech Ltd build am",
+    f3: "Privacy policy", f4: "Contact:", repo: "Open source"
+  };
+  var en = {};
+  var nodes = document.querySelectorAll("[data-t]");
+  for (var i = 0; i < nodes.length; i++) en[nodes[i].getAttribute("data-t")] = nodes[i].textContent;
+
+  function setLang(l) {
+    var map = l === "pcm" ? pcm : en;
+    for (var i = 0; i < nodes.length; i++) {
+      var k = nodes[i].getAttribute("data-t");
+      if (map[k]) nodes[i].textContent = map[k];
+    }
+    document.documentElement.lang = l === "pcm" ? "pcm" : "en";
+    var b = document.querySelectorAll(".lang button");
+    for (var j = 0; j < b.length; j++) b[j].setAttribute("aria-pressed", String(b[j].getAttribute("data-lang") === l));
+    try { localStorage.setItem("ns-lang", l); } catch (e) {}
+  }
+  var lb = document.querySelectorAll(".lang button");
+  for (var k = 0; k < lb.length; k++) lb[k].addEventListener("click", function () { setLang(this.getAttribute("data-lang")); });
+  try { if (localStorage.getItem("ns-lang") === "pcm") setLang("pcm"); } catch (e) {}
+
+  // Quick exit: replace this page (so Back does not return here) with a neutral site.
+  document.getElementById("exit").addEventListener("click", function () {
+    try { sessionStorage.clear(); } catch (e) {}
+    window.location.replace("https://www.google.com/search?q=weather+today");
+  });
+})();
+</script>
+</body>
+</html>
