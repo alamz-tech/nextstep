@@ -25,12 +25,17 @@ class Msg {
 
 /// A referral code the learner got, kept only on this device (encrypted storage).
 class SavedCode {
-  SavedCode(this.code, this.serviceName, this.area, this.created);
+  SavedCode(this.code, this.serviceName, this.area, this.created, {this.reminders = false, this.outcome});
   final String code, serviceName, area;
   final DateTime created;
+  bool reminders;
+  String? outcome; // went | not_yet | need_help
   bool get active => DateTime.now().difference(created).inDays < 90;
-  Map<String, dynamic> toJson() => {'code': code, 'name': serviceName, 'area': area, 'created': created.toIso8601String()};
-  static SavedCode fromJson(Map j) => SavedCode(j['code'], j['name'] ?? '', j['area'] ?? '', DateTime.parse(j['created']));
+  int get notifyBase => (code.hashCode & 0x3fffffff) * 2; // two ids per code: day 3, day 7
+  Map<String, dynamic> toJson() => {'code': code, 'name': serviceName, 'area': area, 'created': created.toIso8601String(),
+        'reminders': reminders, 'outcome': outcome};
+  static SavedCode fromJson(Map j) => SavedCode(j['code'], j['name'] ?? '', j['area'] ?? '', DateTime.parse(j['created']),
+      reminders: j['reminders'] == true, outcome: j['outcome']);
 }
 
 /// App state. The chat lives in memory only: nothing the learner types is kept
@@ -178,8 +183,41 @@ class AppState extends ChangeNotifier {
   // ---------------------------------------------------------------- referral codes
   Future<void> addCode(SavedCode c) async {
     codes.insert(0, c);
-    await store.write('codes', jsonEncode(codes.map((e) => e.toJson()).toList()));
+    await _saveCodes();
     notifyListeners();
+  }
+
+  Future<void> _saveCodes() => store.write('codes', jsonEncode(codes.map((e) => e.toJson()).toList()));
+
+  SavedCode? codeFor(String code) => codes.where((c) => c.code == code).firstOrNull;
+
+  /// Day-3 and day-7 check-ins, scheduled on the device only (Android). Neutral text.
+  Future<void> setReminders(SavedCode c, bool on) async {
+    c.reminders = on;
+    if (on) {
+      await Notifications.scheduleCheckIns(t(['followup', 'ping']), t(['followup', 'ask']), baseId: c.notifyBase);
+      try {
+        await api.post('/v1/learner/events', {'event': 'reminder_opt_in', 'lang': lang, 'tier': tier});
+      } catch (_) {}
+    } else {
+      await Notifications.cancel(c.notifyBase);
+    }
+    await _saveCodes();
+    notifyListeners();
+  }
+
+  /// "Went / not yet / need help": aggregate count only. Returns a crisis payload if the barrier needs one.
+  Future<Map<String, dynamic>?> recordOutcome(SavedCode c, String outcome, {String barrier = ''}) async {
+    c.outcome = outcome;
+    if (outcome == 'went' && c.reminders) await setReminders(c, false);
+    await _saveCodes();
+    notifyListeners();
+    try {
+      final r = await api.post('/v1/learner/outcome', {'outcome': outcome, 'barrier': barrier, 'lang': lang, 'tier': tier}) as Map<String, dynamic>;
+      return r['crisis'] as Map<String, dynamic>?;
+    } catch (_) {
+      return barrier == 'blocked' ? {'refs': [['crisis', 'violence']]} : null;
+    }
   }
 
   // ---------------------------------------------------------------- quick exit

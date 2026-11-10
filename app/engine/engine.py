@@ -587,7 +587,7 @@ class Engine:
         if not s:
             return
         card = {
-            "id": s.id, "name": s.name, "address": f"{s.address}, {s.area}", "hours_raw": f"{s.days}, {s.hours}",
+            "id": s.id, "name": s.name, "address": ", ".join(x for x in (s.address, s.area) if x), "hours_raw": ", ".join(x for x in (s.days, s.hours) if x),
             "verified": s.verified, "is_free": s.is_free, "youth_friendly": s.youth_friendly,
             "demo_tag_ref": None if s.verified else ["extra", "referral_demo_tag"],
         }

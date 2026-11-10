@@ -15,6 +15,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -56,6 +57,8 @@ def create_app(settings=None, repo=None) -> FastAPI:
                   redoc_url=None, openapi_url="/v1/openapi.json" if settings.demo_mode else None)
     app.state.container = container
     app.state.ratelimiter = RateLimiter()
+    # Compress text and wasm responses (web app first load ~8.7 MB uncompressed).
+    app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=6)
     if settings.demo_mode:
         # Lets `flutter run -d chrome` (random localhost port) talk to the local API during development.
         app.add_middleware(CORSMiddleware, allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",

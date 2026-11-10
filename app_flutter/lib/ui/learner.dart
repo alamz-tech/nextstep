@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -375,6 +376,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   Widget build(BuildContext context) {
     final s = context.watch<AppState>();
     final x = widget.svc;
+    final verified = x['verified'] == true;
     String t(String f, String k) => s.t([f, k]);
     return Scaffold(
       appBar: nsBar(title: t('menu', 'row_find'), onBack: () => context.pop(), actions: [_exit(context)]),
@@ -385,24 +387,25 @@ class _ServiceScreenState extends State<ServiceScreen> {
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), boxShadow: W.shadow),
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              ServiceCardTop(free: x['is_free'] == true ? t('referral', 'tag_free') : null,
-                  youth: x['youth_friendly'] == true ? t('referral', 'tag_youth') : null, label: t('referral', 'card_image_label')),
+              // Unverified (demo) rows make no claims: no FREE / youth-friendly tags, generic label.
+              ServiceCardTop(free: verified && x['is_free'] == true ? t('referral', 'tag_free') : null,
+                  youth: verified && x['youth_friendly'] == true ? t('referral', 'tag_youth') : null,
+                  label: verified ? t('referral', 'card_image_label') : t('app', 'demo_clinic')),
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: DefaultTextStyle(
                   style: const TextStyle(fontSize: 15, height: 20 / 15, color: W.ink),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    if (x['verified'] != true) ...[
-                      Tag(t('extra', 'referral_demo_tag'), bg: const Color(0xFFC2462E), fg: Colors.white),
-                      const SizedBox(height: 8),
-                    ],
                     Text(x['name'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 6),
                     Row(children: [const Icon(Icons.place_outlined, size: 18, color: W.berry), const SizedBox(width: 6),
-                      Expanded(child: Text('${x['address']}, ${x['area']}'))]),
+                      Expanded(child: Text([x['address'], x['area'], x['lga']].where((v) => (v ?? '').toString().isNotEmpty).join(', ')))]),
                     const SizedBox(height: 6),
-                    Row(children: [const Icon(Icons.schedule, size: 18, color: W.berry), const SizedBox(width: 6),
-                      Expanded(child: Text('${x['days']}, ${x['hours']}'))]),
+                    if (verified)
+                      Row(children: [const Icon(Icons.schedule, size: 18, color: W.berry), const SizedBox(width: 6),
+                        Expanded(child: Text('${x['days']}, ${x['hours']}'))])
+                    else
+                      Text(t('app', 'demo_details'), key: const Key('demo-details'), style: const TextStyle(color: W.sub)),
                     const SizedBox(height: 10),
                     Text(t('referral', 'expect_title'), style: const TextStyle(fontWeight: FontWeight.w700)),
                     Text(t('referral', 'expect')),
@@ -419,12 +422,47 @@ class _ServiceScreenState extends State<ServiceScreen> {
 }
 
 // ===================================================================== Referral code
-class CodeScreen extends StatelessWidget {
+/// The code, how to use it, then (secondary) the day-3/day-7 reminders and the
+/// "went / not yet / need help" check-in. Reached from Find a service and from Home's code card.
+class CodeScreen extends StatefulWidget {
   const CodeScreen({super.key, required this.code});
   final String code;
   @override
+  State<CodeScreen> createState() => _CodeScreenState();
+}
+
+class _CodeScreenState extends State<CodeScreen> {
+  String? reply;
+
+  Future<void> _outcome(AppState s, SavedCode c, String o) async {
+    if (o != 'need_help') {
+      await s.recordOutcome(c, o);
+      setState(() => reply = s.t(o == 'went' ? ['extra', 'fu_rated'] : ['followup', 'not_yet']));
+      return;
+    }
+    final barrier = await showListSheet(context, title: s.t(['followup', 'help']), rows: [
+      for (final (k, row) in [('cost', 'row_cost'), ('scared', 'row_scared'), ('blocked', 'row_blocked'), ('other', 'row_other')])
+        (k, s.t(['followup', row]), s.t(['followup', '${row}_desc'])),
+    ]);
+    if (barrier == null || !mounted) return;
+    final crisis = await s.recordOutcome(c, 'need_help', barrier: barrier);
+    if (!mounted) return;
+    switch (barrier) {
+      case 'blocked':
+        setState(() => reply = s.t(['followup', 'help_blocked']));
+        s.pendingCrisis = crisis ?? {'refs': [['crisis', 'violence']]};
+        context.push('/crisis');
+      case 'other':
+        context.go('/ask');
+      default:
+        setState(() => reply = s.t(['followup', barrier == 'cost' ? 'help_cost' : 'help_scared']));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final s = context.watch<AppState>();
+    final c = s.codeFor(widget.code);
     return Scaffold(
       appBar: nsBar(title: s.t(['app', 'code_title']), onBack: () => _home(context), actions: [_exit(context)]),
       body: NsBody(
@@ -433,12 +471,27 @@ class CodeScreen extends StatelessWidget {
           Panel(
             padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 14),
             child: Column(children: [
-              SelectableText(code, key: const Key('referral-code'),
+              SelectableText(widget.code, key: const Key('referral-code'),
                   style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w700, letterSpacing: 8, color: W.berry)),
               const SizedBox(height: 12),
               Text(s.t(['app', 'code_how']), textAlign: TextAlign.center, style: bodyText),
             ]),
           ),
+          if (c != null) ...[
+            if (!kIsWeb) ...[
+              const SizedBox(height: 12),
+              RowGroup(rows: [
+                NsRow(title: s.t(['app', 'remind_toggle']),
+                    trailing: Switch(key: const Key('remind'), value: c.reminders, activeThumbColor: W.berry, onChanged: (v) => s.setReminders(c, v))),
+              ]),
+            ],
+            const SizedBox(height: 16),
+            Text(s.t(['followup', 'ask']), style: titleText),
+            const SizedBox(height: 10),
+            for (final (o, label) in [('went', 'btn_yes'), ('not_yet', 'btn_not_yet'), ('need_help', 'btn_help')])
+              ChoiceButton(s.t(['followup', label]) + (c.outcome == o ? '  ✓' : ''), key: Key('outcome-$o'), onPressed: () => _outcome(s, c, o)),
+            if (reply != null) Panel(key: const Key('outcome-reply'), child: Text(reply!, style: bodyText)),
+          ],
         ],
       ),
     );

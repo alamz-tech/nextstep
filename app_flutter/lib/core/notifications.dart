@@ -21,17 +21,24 @@ class Notifications {
         importance: Importance.defaultImportance, visibility: NotificationVisibility.secret),
   );
 
-  static Future<void> scheduleCheckIns(String title, String body) async {
+  static Future<void> scheduleCheckIns(String title, String body, {int baseId = 3}) async {
     if (kIsWeb) return;
     await init();
     await _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
     final now = tz.TZDateTime.now(tz.UTC);
-    for (final (id, days) in [(3, 3), (7, 7)]) {
+    for (final (id, days) in [(baseId, 3), (baseId + 1, 7)]) {
       final d = now.add(Duration(days: days));
       // 10:00 West Africa Time = 09:00 UTC (design: send 10:00–18:00 WAT).
       await _plugin.zonedSchedule(id: id, title: title, body: body, scheduledDate: tz.TZDateTime.utc(d.year, d.month, d.day, 9),
           notificationDetails: _details, androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle);
     }
+  }
+
+  static Future<void> cancel(int baseId) async {
+    if (kIsWeb) return;
+    await init();
+    await _plugin.cancel(id: baseId);
+    await _plugin.cancel(id: baseId + 1);
   }
 
   static Future<void> cancelAll() async {

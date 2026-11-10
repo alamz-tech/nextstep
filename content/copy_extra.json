@@ -73,7 +73,10 @@
       "pin_choose": "Choose a 4-digit PIN",
       "pin_again": "Enter it again",
       "delete_confirm": "This removes everything NextStep saved on this phone, and your referral codes on our server. It can't be undone.",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "demo_clinic": "Demo clinic",
+      "demo_details": "Demo clinic – details confirmed in pilot",
+      "remind_toggle": "Remind me in 3 and 7 days"
     },
     "pcm": {
       "not_medical_advice": "This na general information, e no be medical advice. Health worker fit help you with your own matter.",
@@ -106,7 +109,10 @@
       "pin_choose": "Choose 4-number PIN",
       "pin_again": "Type am again",
       "delete_confirm": "This one go clear everything NextStep save for this phone, and your referral code for our server. You no fit bring am back.",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "demo_clinic": "Demo clinic",
+      "demo_details": "Demo clinic – we go confirm details for pilot",
+      "remind_toggle": "Remind me after 3 and 7 days"
     }
   }
 }

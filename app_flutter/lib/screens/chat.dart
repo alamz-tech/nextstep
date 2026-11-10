@@ -257,17 +257,15 @@ class _ChatScreenState extends State<ChatScreen> {
       final c = d['card'] as Map;
       card = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         ServiceCardTop(
-          free: c['is_free'] == true ? s.t(['referral', 'tag_free']) : null,
-          youth: c['youth_friendly'] == true ? s.t(['referral', 'tag_youth']) : null,
-          label: s.t(['referral', 'card_image_label']),
+          free: c['verified'] == true && c['is_free'] == true ? s.t(['referral', 'tag_free']) : null,
+          youth: c['verified'] == true && c['youth_friendly'] == true ? s.t(['referral', 'tag_youth']) : null,
+          label: c['verified'] == true ? s.t(['referral', 'card_image_label']) : s.t(['app', 'demo_clinic']),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(10, 7, 10, 0),
           child: DefaultTextStyle(
             style: const TextStyle(fontSize: 15, height: 20 / 15, color: W.ink),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              if (c['demo_tag_ref'] != null)
-                Padding(padding: const EdgeInsets.only(bottom: 6), child: Tag(s.t(c['demo_tag_ref']), bg: const Color(0xFFC2462E), fg: Colors.white)),
               Text(c['name'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
               const SizedBox(height: 6),
               Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -276,11 +274,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(child: Text(c['address'])),
               ]),
               const SizedBox(height: 6),
-              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Icon(Icons.schedule, size: 18, color: W.berry),
-                const SizedBox(width: 6),
-                Expanded(child: Text(c['hours_raw'])),
-              ]),
+              if (c['verified'] == true)
+                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const Icon(Icons.schedule, size: 18, color: W.berry),
+                  const SizedBox(width: 6),
+                  Expanded(child: Text(c['hours_raw'])),
+                ])
+              else
+                Text(s.t(['app', 'demo_details']), style: const TextStyle(color: W.sub)),
               if (c['code'] != null) ...[
                 const SizedBox(height: 6),
                 Row(children: [
