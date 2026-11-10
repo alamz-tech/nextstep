@@ -203,7 +203,8 @@ def make_router(container) -> APIRouter:
         fs = own_session(sid, p)
         if fs["status"] == "open" and p.role == "facilitator":
             qs = repo.session_questions(sid)
-            grouped, assign = regroup(container.kb, qs, fs["lang"], fs["age_band"])
+            grouped, assign = regroup(container.kb, qs, fs["lang"], fs["age_band"],
+                                     llm=container.engine.llm if container.settings.llm_group_questions else None)
             for qid, key in assign.items():
                 repo.set_question_theme(qid, key)
             repo.replace_themes(sid, grouped)

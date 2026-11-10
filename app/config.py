@@ -58,6 +58,8 @@ class Settings:
     # When false, Q&A always returns the approved chunk text verbatim (safest).
     llm_compose_answers: bool = field(default_factory=lambda: _bool("LLM_COMPOSE_ANSWERS", True))
     llm_crisis_classifier: bool = field(default_factory=lambda: _bool("LLM_CRISIS_CLASSIFIER", True))
+    # Facilitator question box: let the LLM group questions BM25 can't place (keyword grouping is the fallback).
+    llm_group_questions: bool = field(default_factory=lambda: _bool("LLM_GROUP_QUESTIONS", True))
 
     # --- voice ---
     stt_provider: str = field(default_factory=lambda: _str("STT_PROVIDER", "none"))  # none | openai_compat_http

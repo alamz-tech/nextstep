@@ -45,6 +45,29 @@ browser (user agent) and the URL path**, and keeps these logs for **30 days**. T
 questions, answers or check answers, because those travel in the request body. NextStep cannot delete them early on a
 user's request.
 
+## AI provider: Groq
+The demo uses **Groq** (GroqCloud, model `openai/gpt-oss-120b`) for three jobs:
+1. **Crisis check:** each chat message is also checked by the AI for signs of violence or self-harm (the keyword check always runs too).
+2. **Rephrasing answers:** the AI may reword an answer, but only from the reviewed knowledge-base text that was retrieved for the question. Every AI answer then goes through the same safety check as before (no doses, no diagnosis, no phone numbers); if it fails, the reviewed text is shown unchanged.
+3. **Grouping question-box questions** for facilitators, for questions the keyword search can't place. Keyword grouping is the fallback.
+
+**What is sent to Groq:** the learner's message or the student's question, **after** names, phone numbers, emails and handles are
+stripped out, plus the reviewed answer text. No install ID, IP address, age band or referral code is sent.
+
+**Groq's terms** (from Groq's "Your Data" page, checked 2026-11-11, https://console.groq.com/docs/your-data):
+- By default Groq does not keep prompts or outputs from inference requests.
+- Groq may temporarily log inputs and outputs to troubleshoot reliability problems or investigate abuse, for **up to 30 days**,
+  unless the law requires longer. **Zero Data Retention** (an account setting) turns this logging off.
+- Groq always records usage metadata (it says this contains no inputs or outputs).
+- Groq stores customer data in Google Cloud in the **United States**.
+- Groq's page does not say whether customer data is used to train models.
+
+**Status:** Zero Data Retention must be switched on by the account owner in the Groq console (Settings → Data Controls). Until
+it is confirmed on, assume Groq may keep redacted messages for up to 30 days.
+
+The Groq API key is held in Google Secret Manager (`groq-api-key`) and given to Cloud Run as an environment variable. It is not
+in the code repository. To turn the AI off, set `LLM_PROVIDER=none`: NextStep then uses keyword checks and reviewed text only.
+
 ## Hosting (demo)
 The public demo runs on Google Cloud Run in `europe-west1` (Belgium) with fake data only. Its database is wiped on every restart. A pilot needs a hosting decision on data location (Nigeria Data Protection Act 2023).
 

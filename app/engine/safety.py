@@ -18,6 +18,7 @@ from pathlib import Path
 
 import yaml
 
+from ..api.redact import redact
 from ..llm.base import LLM, parse_json
 
 
@@ -103,8 +104,9 @@ CLASSIFIER_SCHEMA = {
 
 
 def _wrap(text: str) -> str:
-    # Neutralise any attempt to close the data block early.
-    safe = text.replace("<", "‹").replace(">", "›")[:2000]
+    # Strip names, numbers, emails and handles before anything leaves the server,
+    # then neutralise any attempt to close the data block early.
+    safe = redact(text)[0].replace("<", "‹").replace(">", "›")[:2000]
     return f"<user_message>\n{safe}\n</user_message>"
 
 
@@ -147,7 +149,8 @@ def compose_answer(llm: LLM, question: str, chunks: list, lang: str) -> tuple[st
     sources = "\n".join(
         f'<source id="{c.id}">\n{c.body.replace("<", "‹")}\n</source>' for c in chunks
     )
-    user = f"{sources}\n\n<question>\n{question.replace('<', '‹').replace('>', '›')[:1000]}\n</question>"
+    q = redact(question)[0].replace("<", "‹").replace(">", "›")[:1000]
+    user = f"{sources}\n\n<question>\n{q}\n</question>"
     out = parse_json(llm.complete(COMPOSER_SYSTEM.format(lang_name=LANG_NAMES.get(lang, "English")), user,
                                   max_tokens=600, json_schema=COMPOSER_SCHEMA))
     if not out or not out.get("answerable"):
