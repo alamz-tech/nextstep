@@ -15,7 +15,7 @@ no accounts for learners, no message text kept.
 | Referral code | server: code, service id, state, age band, language, HMAC(install ID) | 90 days (`REFERRAL_TTL_DAYS`) | Shown on the service card. Clinics see only "confirmed / not found / expired". |
 | Usage counts | server `events` table | 365 days (`EVENTS_RETENTION_DAYS`) | Day, event, category dimensions. No IDs, no text. |
 
-**STOP / DELETE** (typed at any time, as in the design) erase the server conversation state and the install's
+**Delete my data** (Settings) and **STOP / DELETE** (typed in the chat) erase the server conversation state and the install's
 referral codes, cancel reminders and wipe the device storage. Aggregate counts already recorded cannot be traced
 to anyone and are not removed.
 
@@ -36,8 +36,14 @@ Aggregate counts with small-cell suppression (any count under 5 shows as "<5"). 
 their own organisation only.
 
 ## Server logs
-Access logs are off in Docker (`--no-access-log`); application logs pass through a scrubber that removes phone-number-like
-digit runs and message fields. Request bodies are never logged. Rate-limit keys are hashes held in memory only.
+Our own server's access logs are off (`--no-access-log`) and application logs pass through a scrubber that removes
+phone-number-like digit runs and message fields. Request bodies are never logged. Rate-limit keys are hashes held in
+memory only.
+
+**Google Cloud Run platform logs:** the hosting platform itself records, for every request, the visitor's **IP address,
+browser (user agent) and the URL path**, and keeps these logs for **30 days**. These logs do **not** contain message text,
+questions, answers or check answers, because those travel in the request body. NextStep cannot delete them early on a
+user's request.
 
 ## Hosting (demo)
 The public demo runs on Google Cloud Run in `europe-west1` (Belgium) with fake data only. Its database is wiped on every restart. A pilot needs a hosting decision on data location (Nigeria Data Protection Act 2023).

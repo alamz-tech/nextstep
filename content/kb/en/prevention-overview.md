@@ -17,4 +17,4 @@ Some ways to protect yourself:
 • PrEP: a medicine that helps prevent HIV, for people who may be at higher risk. A health worker decides if it's right for you.
 • Testing: know your status, and your partner's.
 
-Want to find a free place to talk about PrEP?
+Want to find a place to talk about PrEP?

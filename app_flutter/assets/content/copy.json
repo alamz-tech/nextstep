@@ -6,9 +6,9 @@
     "structure": "flow -> language (en | pcm) -> key",
     "limits": "Reply buttons: max 3 per message, max 20 chars each. List rows: max 10, title max 24 chars, description max 72 chars, list button max 20 chars.",
     "placeholders": "Values in [SQUARE BRACKETS] are placeholders. Never ship invented phone numbers, clinic names or retention periods.",
-    "draft_keys": "Keys listed in each flow's _draft array contain health information and must be signed off by a clinician before launch."
+    "draft_keys": "Keys listed in each flow's _draft array contain health information and must be signed off by a clinician before launch.",
+    "edits_nov10": "Edited 10 Nov 2026 so every claim is strictly true in the demo: no 'free/youth-friendly' claims about unverified services, voice marked coming soon."
   },
-
   "global": {
     "en": {
       "stop": "You've stopped NextStep. Nothing more will be sent. Say Hi anytime to start again.",
@@ -25,7 +25,6 @@
       "list_button": "Choose"
     }
   },
-
   "consent": {
     "_draft": [],
     "en": {
@@ -49,9 +48,11 @@
       "agreed": "Thank you. Make we start!"
     }
   },
-
   "age": {
-    "_draft": ["teen", "under15"],
+    "_draft": [
+      "teen",
+      "under15"
+    ],
     "en": {
       "ask": "How old are you? This helps me give you the right information.",
       "btn_15_17": "15–17",
@@ -73,7 +74,6 @@
       "over24": "NextStep na for people wey dey 15 reach 24, but you fit still use the service finder. Type MENU to see am."
     }
   },
-
   "menu": {
     "_draft": [],
     "en": {
@@ -83,7 +83,7 @@
       "row_check": "Private check",
       "row_check_desc": "6 quick questions, no names",
       "row_find": "Find a service",
-      "row_find_desc": "Free, youth-friendly places near you",
+      "row_find_desc": "Clinics near you (demo list)",
       "row_lang": "Change language",
       "row_lang_desc": "English or Pidgin",
       "lang_prompt": "Which language do you prefer?",
@@ -98,7 +98,7 @@
       "row_check": "Private check",
       "row_check_desc": "6 quick questions, no name",
       "row_find": "Find service",
-      "row_find_desc": "Free places wey like young people, near you",
+      "row_find_desc": "Clinic wey near you (demo list)",
       "row_lang": "Change language",
       "row_lang_desc": "English or Pidgin",
       "lang_prompt": "Which language you like?",
@@ -107,11 +107,14 @@
       "lang_set": "Okay, we go continue for Pidgin."
     }
   },
-
   "qa": {
-    "_draft": ["answer_kiss", "protect", "unknown"],
+    "_draft": [
+      "answer_kiss",
+      "protect",
+      "unknown"
+    ],
     "en": {
-      "prompt": "Ask me anything. You can type, or send a voice note.",
+      "prompt": "Ask me anything. Type your question (voice notes coming soon).",
       "user_voice": "Can I get HIV from kissing?",
       "heard": "I heard: \"Can I get HIV from kissing?\"",
       "answer_kiss": "Good question. No. HIV is not passed on by kissing, hugging, or sharing cups or plates.\n\nHIV can pass through sex without a condom, sharing needles, and from a mother to her baby. There are ways to prevent all of these.\n\nWant to know how to stay protected?",
@@ -123,7 +126,7 @@
       "voice_label": "Voice reply"
     },
     "pcm": {
-      "prompt": "Ask me anything. You fit type am, or send voice note.",
+      "prompt": "Ask me anything. Type your question (voice note dey come soon).",
       "user_voice": "I fit catch HIV if I kiss person?",
       "heard": "I hear: \"I fit catch HIV if I kiss person?\"",
       "answer_kiss": "Good question. No. HIV no dey pass through kiss, hug, or if una share cup or plate.\n\nHIV fit pass through sex wey no get condom, if una share needle, and from mama go her pikin. E get ways to prevent all of dem.\n\nYou wan know how to protect yourself?",
@@ -135,9 +138,21 @@
       "voice_label": "Voice reply"
     }
   },
-
   "check": {
-    "_draft": ["intro", "q1", "q2", "q3", "q4", "q5", "q5_yes", "q6", "result_next", "result_low", "result_sti", "selftest"],
+    "_draft": [
+      "intro",
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5",
+      "q5_yes",
+      "q6",
+      "result_next",
+      "result_low",
+      "result_sti",
+      "selftest"
+    ],
     "en": {
       "intro": "This is a private check: 6 quick questions, one at a time. There are no right or wrong answers. Your answers are only used to suggest a next step for you.",
       "btn_start": "Start",
@@ -155,8 +170,8 @@
       "btn_not_sure": "Not sure",
       "btn_rather_not": "Rather not say",
       "result_next": "Thank you for sharing. That took courage.\n\nFrom your answers, an HIV test could help you know your status. You can do it privately with a self-test, or at a clinic.\n\nYou may also be able to get PrEP, a medicine that helps prevent HIV.\n\nThis is not a diagnosis. Only a test can tell you your status.",
-      "result_low": "Thank you for sharing. From your answers, your chance of HIV right now looks lower. That's good to know.\n\nTesting regularly is still a smart habit. Want to find a free, youth-friendly service?",
-      "result_sti": "You mentioned some signs down there. A health worker can check this for free. It's common and it can be treated.",
+      "result_low": "Thank you for sharing. From your answers, your chance of HIV right now looks lower. That's good to know.\n\nTesting regularly is still a smart habit. Want to see clinics near you?",
+      "result_sti": "You mentioned some signs down there. A health worker can check this. It's common and it can be treated.",
       "btn_find": "Find a service",
       "btn_selftest": "About self-tests",
       "selftest": "An HIV self-test lets you test in private, with a mouth swab or a finger prick. Results take about 20 minutes.\n\nIf the result is reactive, you'll need a follow-up test at a clinic to confirm it.\n\nWhere to get one: [SELF-TEST DISTRIBUTION POINTS]"
@@ -178,20 +193,21 @@
       "btn_not_sure": "I no sure",
       "btn_rather_not": "I no wan talk",
       "result_next": "Thank you say you share. E take heart.\n\nFrom your answers, HIV test fit help you know your status. You fit do am for private with self-test, or for clinic.\n\nYou fit also get PrEP, medicine wey dey help prevent HIV.\n\nThis one no be diagnosis. Na only test fit tell you your status.",
-      "result_low": "Thank you say you share. From your answers, your chance of HIV now be like say e low. E good to know.\n\nTo dey test regular still be better habit. You wan find free service wey like young people?",
-      "result_sti": "You talk say you see some sign for down there. Health worker fit check am for free. E common and dem fit treat am.",
+      "result_low": "Thank you say you share. From your answers, your chance of HIV now be like say e low. E good to know.\n\nTo dey test regular still be better habit. You wan see clinic wey near you?",
+      "result_sti": "You talk say you see some sign for down there. Health worker fit check am. E common and dem fit treat am.",
       "btn_find": "Find service",
       "btn_selftest": "About self-test",
       "selftest": "HIV self-test na test wey you fit do by yourself for private, with swab for mouth or small blood from finger. Result dey take like 20 minutes.\n\nIf e show reactive, you go need do another test for clinic to confirm am.\n\nWhere to get am: [SELF-TEST DISTRIBUTION POINTS]"
     }
   },
-
   "referral": {
-    "_draft": ["expect"],
+    "_draft": [
+      "expect"
+    ],
     "en": {
       "ask_location": "To find the nearest service, type your area (like Yaba, Lagos) or share your location. I only use it for this search.",
       "user_area": "Yaba, Lagos",
-      "intro": "Here's a youth-friendly service near you:",
+      "intro": "Here's a service near you (demo list):",
       "card_image_label": "Youth health service",
       "tag_free": "FREE",
       "tag_youth": "Youth-friendly",
@@ -209,7 +225,7 @@
     "pcm": {
       "ask_location": "To find the service wey near you pass, type your area (like Yaba, Lagos) or send your location. I go only use am for this search.",
       "user_area": "Yaba, Lagos",
-      "intro": "See one youth-friendly service wey near you:",
+      "intro": "See one service wey near you (demo list):",
       "card_image_label": "Youth health service",
       "tag_free": "FREE",
       "tag_youth": "Youth-friendly",
@@ -225,9 +241,10 @@
       "remind_ok": "Okay. I go check you after 3 days. The reminder go just talk \"Hi, na NextStep\", nothing personal."
     }
   },
-
   "followup": {
-    "_draft": ["help_cost"],
+    "_draft": [
+      "help_cost"
+    ],
     "en": {
       "time_label": "3 days later",
       "ping": "Hi, it's NextStep. Just checking in.",
@@ -251,8 +268,8 @@
       "row_blocked_desc": "A partner or family member",
       "row_other": "Something else",
       "row_other_desc": "Tell me in your own words",
-      "help_cost": "The services I share are free. [TRANSPORT SUPPORT INFO, if the programme offers it]. Would a place closer to you help?",
-      "help_scared": "It's normal to feel nervous. Health workers at youth-friendly services are trained to be kind and private. You can also bring a friend.",
+      "help_cost": "Ask the service about any costs before you go. Would a place closer to you help?",
+      "help_scared": "It's normal to feel nervous. You can ask the health worker to explain each step, and you can bring a friend.",
       "help_blocked": "I'm sorry that's happening. You deserve to make choices about your own health. If you feel unsafe, these people can help."
     },
     "pcm": {
@@ -278,14 +295,18 @@
       "row_blocked_desc": "Partner or family person",
       "row_other": "Another thing",
       "row_other_desc": "Tell me for your own words",
-      "help_cost": "The services wey I dey share na free. [TRANSPORT SUPPORT INFO, if the programme get am]. Place wey near you pass go help?",
-      "help_scared": "E normal to dey fear small. Health workers for youth-friendly service sabi how to dey kind and keep secret. You fit also carry friend.",
+      "help_cost": "Ask the service about any money wey you go pay before you go. Place wey near you pass go help?",
+      "help_scared": "E normal to dey fear small. You fit ask the health worker make e explain everything, and you fit carry friend come.",
       "help_blocked": "Sorry say e dey happen. You get right to decide about your own health. If you no feel safe, these people fit help."
     }
   },
-
   "crisis": {
-    "_draft": ["violence", "selfharm", "pep", "safe_now"],
+    "_draft": [
+      "violence",
+      "selfharm",
+      "pep",
+      "safe_now"
+    ],
     "en": {
       "user_violence": "My boyfriend hit me again. I don't feel safe.",
       "violence": "Thank you for telling me. What happened is not your fault, and you deserve to be safe.\n\nYou don't have to deal with this alone. These people are trained to help. It's free and confidential:\n• [VERIFIED HELPLINE 1]\n• [VERIFIED HELPLINE 2]\n\nIf you are in danger right now, call [EMERGENCY NUMBER] or go somewhere you feel safe.",
@@ -309,9 +330,10 @@
       "safe_now": "I happy to hear. These numbers go dey here for our chat anytime you need dem. You fit also type HELP anytime."
     }
   },
-
   "cant_help": {
-    "_draft": ["dose"],
+    "_draft": [
+      "dose"
+    ],
     "en": {
       "user_dose": "How many PrEP pills should I take?",
       "dose": "That's an important question, but I can't give medicine doses. The right amount depends on you, and a health worker needs to decide it.\n\nPlease ask a nurse, doctor or pharmacist. I can help you find a free service where you can ask.",
@@ -331,7 +353,6 @@
       "btn_menu": "Main menu"
     }
   },
-
   "sim": {
     "_draft": [],
     "en": {

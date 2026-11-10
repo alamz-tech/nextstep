@@ -17,4 +17,4 @@ See some ways to protect yourself:
 • PrEP: medicine wey dey help prevent HIV, for people wey fit dey higher risk. Health worker go check if e good for you.
 • Test: know your status, and your partner own.
 
-You wan find free place to talk about PrEP?
+You wan find place to talk about PrEP?

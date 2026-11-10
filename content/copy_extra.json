@@ -10,7 +10,7 @@
     ],
     "en": {
       "heard_tpl": "I heard: \"{transcript}\"",
-      "diagnosis": "I can't tell whether you have HIV or another infection. Only a test, with a health worker, can tell you that.\n\nA free, youth-friendly service can test you privately. Want me to find one?",
+      "diagnosis": "I can't tell whether you have HIV or another infection. Only a test, with a health worker, can tell you that.\n\nA health service can test you privately. Want me to find one?",
       "voice_unavailable": "Sorry, I can't listen to voice notes in this language yet. Please type your question and I'll answer in text.",
       "referral_none": "I don't have a checked service for that area yet. Please try another area nearby, or type MENU.",
       "referral_demo_tag": "DEMO DATA – not a real service. Do not visit.",
@@ -24,7 +24,7 @@
     },
     "pcm": {
       "heard_tpl": "I hear: \"{transcript}\"",
-      "diagnosis": "I no fit talk whether you get HIV or another infection. Na only test, with health worker, fit tell you that one.\n\nFree service wey like young people fit test you for private. Make I find one for you?",
+      "diagnosis": "I no fit talk whether you get HIV or another infection. Na only test, with health worker, fit tell you that one.\n\nHealth service fit test you for private. Make I find one for you?",
       "voice_unavailable": "Sorry, I never fit hear voice note for this language. Abeg type your question and I go answer for text.",
       "referral_none": "I never get service wey we don check for that area. Abeg try another area wey near, or type MENU.",
       "referral_demo_tag": "DEMO DATA – no be real service. No go there.",
