@@ -34,6 +34,8 @@ p{margin:0 0 12px}
 .lead{font-size:18px;line-height:27px;color:var(--text2)}
 .start{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:999px;background:var(--berry);color:var(--on-berry);font-size:18px;font-weight:700;text-decoration:none;margin:20px 0 8px}
 .small{font-size:14px;line-height:20px;color:var(--text2);margin:0}
+.get{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border-radius:999px;border:2px solid var(--berry);color:var(--berry);font-size:16px;font-weight:700;text-decoration:none;margin:16px 0 8px}
+.android[hidden]{display:none}
 ol,ul{margin:0;padding:0;list-style:none}
 .steps li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
 .steps li:first-child{border-top:0;padding-top:0}
@@ -73,6 +75,10 @@ html[lang=pcm] .draft{display:block}
     <p class="lead" data-t="lead">Ask your questions, find your next step and get to a free, youth-friendly clinic, all without giving your name.</p>
     <a class="start" href="/app/" data-t="start">Start</a>
     <p class="small" data-t="noname">No name or phone number needed.</p>
+    <div class="android" id="android" hidden>
+      <a class="get" href="/download/nextstep.apk" download><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11 M7 10l5 5 5-5 M5 20h14"/></svg><span data-t="apk">Get the Android app</span></a>
+      <p class="small"><span data-t="apksize">Free, about 19 MB.</span> <a href="/download/nextstep-32bit.apk" download data-t="apk32">Older phone? Use this version (17 MB).</a></p>
+    </div>
   </section>
 
   <section class="panel" aria-labelledby="h-how">
@@ -122,6 +128,7 @@ html[lang=pcm] .draft{display:block}
     exit: "Comot", h1: "Free help wey private, to stay safe from HIV.",
     lead: "Ask your question, find your next step and reach free clinic wey like young people, without giving your name.",
     start: "Start", noname: "You no need give name or phone number.",
+    apk: "Get the Android app", apksize: "E free, like 19 MB.", apk32: "Old phone? Use this one (17 MB).",
     how: "How e dey work", s1: "Ask your question for private, by typing or by voice.",
     s2: "Do short private check to find your next step.", s3: "Get referral code for clinic wey near you and like young people.",
     priv: "Your privacy", p1: "We no go ever ask your name or phone number.", p2: "We no dey keep your messages.",
@@ -151,6 +158,9 @@ html[lang=pcm] .draft{display:block}
   var lb = document.querySelectorAll(".lang button");
   for (var k = 0; k < lb.length; k++) lb[k].addEventListener("click", function () { setLang(this.getAttribute("data-lang")); });
   try { if (localStorage.getItem("ns-lang") === "pcm") setLang("pcm"); } catch (e) {}
+
+  // Android phones also get a direct download of the app.
+  if (/Android/i.test(navigator.userAgent)) document.getElementById("android").hidden = false;
 
   // Quick exit: replace this page (so Back does not return here) with a neutral site.
   document.getElementById("exit").addEventListener("click", function () {

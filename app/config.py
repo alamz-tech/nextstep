@@ -89,7 +89,7 @@ class Settings:
     feature_whatsapp: bool = field(default_factory=lambda: _bool("FEATURE_WHATSAPP", False))
 
     # --- app API ---
-    public_repo_url: str = field(default_factory=lambda: _str("PUBLIC_REPO_URL", ""))
+    public_repo_url: str = field(default_factory=lambda: _str("PUBLIC_REPO_URL", "https://github.com/alamz-tech/nextstep"))
     public_base_url: str = field(default_factory=lambda: _str("PUBLIC_BASE_URL", "http://localhost:8077"))
     token_secret: str = field(default_factory=lambda: _str("TOKEN_SECRET", ""))
     token_ttl_hours: int = field(default_factory=lambda: _int("TOKEN_TTL_HOURS", 12))
