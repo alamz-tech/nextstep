@@ -296,7 +296,7 @@ class ServiceCardTop extends StatelessWidget {
         decoration: BoxDecoration(color: W.teal, borderRadius: BorderRadius.circular(8)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            SizedBox(width: 34, height: 34, child: CustomPaint(painter: StepsMark(stroke: W.berry, dot: W.yellow, tile: Colors.white))),
+            SizedBox(width: 34, height: 34, child: CustomPaint(painter: StepsMark(stroke: W.berry, dot: W.berryDeep, tile: Colors.white))),
             const Spacer(),
             if (free != null) Tag(free!, bg: W.yellow, fg: const Color(0xFF1B1F23)),
             const SizedBox(width: 6),
