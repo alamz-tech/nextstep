@@ -9,3 +9,4 @@ sources/*.pdf
 sources/extracts/
 .env.*
 !.env.example
+downloads/

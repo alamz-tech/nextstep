@@ -13,6 +13,7 @@ COPY config ./config
 COPY data/services.csv data/README.md ./data/
 COPY scripts ./scripts
 COPY app_flutter/build/web* ./app_flutter/build/web/
+COPY downloads* ./downloads/
 RUN mkdir -p /srv/data && chown -R nextstep /srv/data
 USER nextstep
 EXPOSE 8077

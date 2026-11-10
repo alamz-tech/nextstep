@@ -18,19 +18,19 @@ or narrow window for the student join page; (4) the dashboard.
 
 Demo password: `demo-only-password` unless you set `DEMO_PASSWORD`.
 
-## Journey 1: learner chat (≈60 s)
+## Journey 1: learner (≈60 s)
 
-The app is one chat screen, as in the design's WhatsApp-style chat frame.
+Home is the hub: Ask a question, Private check, Find a service. Every inner screen has a back arrow to Home.
 
 | Time | Do | Say |
 |---|---|---|
-| 0:00 | Open the app. The consent message appears. Tap **I agree** → **18–24**. | "Private by design: no name, no phone number. Consent comes first." |
-| 0:08 | Tap **Choose** → **Ask a question**. Tap the mic once (demo voice note). | "Voice-first. The answer comes only from vetted content, marked draft until a clinician signs off." |
+| 0:00 | Open the app. Consent → **I agree** → **18–24** → **English**. Home appears. | "Private by design: no name, no phone number. Under-15s get a kind exit and nothing is saved." |
+| 0:10 | **Ask a question** → type "Can I get HIV from kissing?" | "Answers come only from vetted content, marked draft until a clinician signs off." |
 | 0:20 | Type "How many PrEP pills should I take?" | "It never gives doses or diagnoses." |
-| 0:26 | **Choose** → **Private check** → **Start** → answer the six questions (Yes to Q1). | "One question at a time. The result is a next step, not a diagnosis." |
-| 0:40 | **Find a service** → type "Yaba". Point at the DEMO tag and the referral code on the card. | "Demo data is always tagged. The code carries no personal details." |
-| 0:48 | **Remind me** → **Skip 3 days (demo)** → **Yes, I went**. | "Reminders are on the phone and say only 'Hi, it's NextStep'." |
-| 0:55 | Header menu (⋮) → **Quick exit**. Calculator appears. Press and hold **=** to come back. | "One tap hides everything." |
+| 0:26 | Back → **Private check** → six questions (Yes to Q1). | "One question per screen. The result is a next step, not a diagnosis." |
+| 0:40 | **Find a service** → pick a clinic (DEMO tag) → **Get referral code**. | "The code carries no personal details." |
+| 0:48 | **Back to home**: the code card is now on Home. | |
+| 0:52 | Tap the quick-exit icon (top right). Calculator appears. Press and hold **=** to return. | "One tap hides everything." |
 
 ## Journey 2: facilitator with question box (≈60 s)
 

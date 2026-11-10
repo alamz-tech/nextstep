@@ -31,6 +31,15 @@ Health check: `/v1/health` (Cloud Run reserves `/healthz`).
 
 ## Android APK for the live server
 
+Live downloads (debug-signed demo builds):
+- https://nextstep-826530220017.europe-west1.run.app/download/nextstep.apk (64-bit phones, most since ~2019)
+- https://nextstep-826530220017.europe-west1.run.app/download/nextstep-32bit.apk (older or low-end phones)
+
+They are split per phone type because Cloud Run caps one response at 32 MB. To refresh them, build, copy
+the `app-arm64-v8a` and `app-armeabi-v7a` APKs into `downloads/` as `nextstep.apk` and `nextstep-32bit.apk`,
+then redeploy.
+
+
 ```bash
 scripts/build_apk.sh https://nextstep-826530220017.europe-west1.run.app
 ```

@@ -92,6 +92,20 @@ def create_app(settings=None, repo=None) -> FastAPI:
         def no_web():
             return HTMLResponse("<p>Flutter web build not found. Run <code>scripts/build_web.sh</code>.</p>", status_code=503)
 
+    @app.get("/download/{name}")
+    def download_apk(name: str):
+        """Demo Android APKs (debug-signed), built with scripts/build_apk.sh against this server.
+        nextstep.apk = 64-bit ARM (most phones); nextstep-32bit.apk = older/low-end phones.
+        Split per ABI because Cloud Run caps a response at 32 MB."""
+        from fastapi import HTTPException
+        from fastapi.responses import FileResponse
+        if name not in ("nextstep.apk", "nextstep-32bit.apk"):
+            raise HTTPException(404)
+        apk = ROOT / "downloads" / name
+        if not apk.exists():
+            raise HTTPException(404, "APK not built")
+        return FileResponse(apk, media_type="application/vnd.android.package-archive", filename=name)
+
     @app.get("/")
     def root():
         return RedirectResponse("/app/")
