@@ -21,7 +21,7 @@ android {
         applicationId = "com.alamztech.nextstep"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = maxOf(flutter.minSdkVersion, 23) // record + secure storage need API 23 (Android 6.0)
+        minSdk = maxOf(flutter.minSdkVersion, 23) // Flutter 3.47 sets 24 (Android 7.0); never below 23 for record + secure storage
         targetSdk = flutter.targetSdkVersion
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
         // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)

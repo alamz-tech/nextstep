@@ -91,7 +91,7 @@ cd app_flutter && flutter test                  # quick exit / PIN / history beh
 * **Web:** `scripts/build_web.sh` → `app_flutter/build/web`, served by the API at `/app/` (same origin, no CORS).
 * **Android APK:** `scripts/build_apk.sh https://your-server` → split APKs per ABI in
   `app_flutter/build/app/outputs/flutter-apk/` (`app-armeabi-v7a-release.apk` is the one for most low-end phones).
-  `minSdk` is 21 (Android 5.0). For the emulator use `scripts/build_apk.sh http://10.0.2.2:8077`.
+  `minSdk` is 24 (Android 7.0, the Flutter 3.47 minimum). For the emulator use `scripts/build_apk.sh http://10.0.2.2:8077`.
   The demo APK is signed with the debug key; create a release keystore before distributing.
 
 ## Environment variables
