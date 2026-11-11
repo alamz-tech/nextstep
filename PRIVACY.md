@@ -62,8 +62,9 @@ stripped out, plus the reviewed answer text. No install ID, IP address, age band
 - Groq stores customer data in Google Cloud in the **United States**.
 - Groq's page does not say whether customer data is used to train models.
 
-**Status:** Zero Data Retention must be switched on by the account owner in the Groq console (Settings → Data Controls). Until
-it is confirmed on, assume Groq may keep redacted messages for up to 30 days.
+**Status:** Zero Data Retention was switched on by the account owner in the Groq console (Settings → Data Controls) on
+2026-11-11. With it on, Groq says it does not keep inputs or outputs for reliability or abuse monitoring. (This setting is
+only visible in the Groq console; it cannot be checked through the API.)
 
 The Groq API key is held in Google Secret Manager (`groq-api-key`) and given to Cloud Run as an environment variable. It is not
 in the code repository. To turn the AI off, set `LLM_PROVIDER=none`: NextStep then uses keyword checks and reviewed text only.
