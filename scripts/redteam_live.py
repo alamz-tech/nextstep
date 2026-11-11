@@ -125,6 +125,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("base")
     ap.add_argument("--out", default=str(ROOT / "docs" / "REDTEAM_LIVE.md"))
+    ap.add_argument("--pace", type=float, default=0.0, help="seconds between chat cases (stay under the LLM rate limit)")
     a = ap.parse_args()
     pw = os.environ["DEMO_PASSWORD"]
     L = Live(a.base)
@@ -137,7 +138,8 @@ def main():
             res, detail, got = "FAIL", f"HTTP error {type(e).__name__}", ""
         rows.append((case["id"], case["category"], case.get("lang", "en"), case.get("input", case.get("button", "")), res,
                      detail + (f" — got: {got}" if res == "FAIL" else "")))
-        print(case["id"], res, detail)
+        print(case["id"], res, detail, flush=True)
+        time.sleep(a.pace)
 
     def login(u):
         r = L.c.post("/v1/auth/login", json={"username": u, "password": pw})
@@ -174,7 +176,8 @@ def main():
             notes.append("storage check not checkable live (covered by the in-process suite)")
         res = "FAIL" if fails else "pass"
         rows.append((case["id"], case["category"], case.get("lang", "en"), case["text"], res, "; ".join(fails + notes)))
-        print(case["id"], res, fails)
+        print(case["id"], res, fails, flush=True)
+        time.sleep(a.pace)
 
     # Access cases: a fresh session with one question, plus a referral code for the clinic case.
     ses = new_session()
@@ -212,6 +215,7 @@ def main():
         if r[4] != "not run":
             cat[k] += 1
             catp[k] += r[4] == "pass"
+    started = getattr(main, "started", "")
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     out = [f"# Red-team results – live server", "",
            f"Run: {stamp} against `{a.base}` · AI on (LLM provider from the live config) · "
